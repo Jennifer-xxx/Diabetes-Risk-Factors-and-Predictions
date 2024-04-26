@@ -1,0 +1,584 @@
+---
+title: "Most Predictive Risk Factors of Diabetes and Make Predictions"
+output: html_document
+author: "Yufei Liu"
+bibliography: ref.bib
+---
+
+```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
+library(haven)
+library(ggplot2)
+library(ggstats)
+library(gridExtra)
+library(data.table)
+library(kableExtra)
+library(dplyr)
+library(vtable)
+library(corrplot)
+library(jtools)
+library(MASS)
+```
+
+```{r load-data, message=FALSE, warning=FALSE, include=FALSE}
+fn <- "https://www.cdc.gov/brfss/annual_data/2022/files/LLCP2022XPT.zip"
+if (!file.exists("LLCP2022.XPT ")){
+  download.file(fn, destfile = "LLCP2022XPT.zip")
+  unzip("LLCP2022XPT.zip", exdir = ".")
+}
+
+project_data <- read_xpt("LLCP2022.XPT ")
+
+dim(project_data)
+sum(is.na(project_data))
+```
+
+# 1. Introduction
+
+Diabetes is a serious chronic disease all over the world. The global prevalence of diabetes continues to skyrocket, exacerbated by a lack of awareness of the disease. In the US, approximately 38.4 million people, which is 11.6% of the US population, had diabetes in 2021 from the statistics in the National Diabetes Statistics Report [@CDC-report] by the Centers for Disease Control and Prevention (CDC).  
+For long, researchers have been focused on examining the diabetes risks and predicting diabetes in the early stage. Since one of my family members has diabetes, I'm also interested in the cause of diabetes and what we can do to prevent ourselves from having diabetes. Therefore, I would like to explore **the risk factors that are most predictive of diabetes and predict whether an individual has diabetes** given the information provided in the Behavioral Risk Factor Surveillance System (BRFSS) survey data [@BRFSS-data].  
+The BRFSS survey, initiated by the CDC, is a state-based cross-sectional telephone survey used to gather prevalence data on risk behaviors and preventive health practices among adult U.S. residents. Since the data is developing annually, I'll use the newest available BRFSS survey data in 2022 to explore my questions. The dataset contains 445132 rows and 328 columns. Each row corresponds to a respondent. The columns contain the basic information of the respondents, their health conditions, answers to the health-related questions in the survey, and most importantly, whether the respondents have diabetes. Since there are too many columns and my analysis will only use a small portion of the potentially important risk factors, I will not list all the variables and would explain the used variables in the later sections. The meanings of all the variables and their possible values are listed on the documentation website [@BRFSS-data]. 
+
+# 2. Methods
+
+## 2.1 Keep only columns of interest and rename the variables
+From the relevant paper about some of the potential risk factors with diabetes [@risk-factors] and the available columns of the survey data, I selected the below columns for future analysis and renamed them for easy understanding.
+
+- Question (`column name`): possible values (meaning of the value) > **renamed column name**
+
+**Response variable:**
+
+- (Ever told) you had diabetes (`DIABETE4`): 1 (Yes), 2 (Only during pregnancy), 3 (No), 4 (No, pre-diabetes or borderline diabetes), 7 (Don’t know/Not Sure), 9 (Refused) > **diabetes**
+
+**Predictor variables:**
+
+- Imputed race/ethnicity value (`_IMPRACE`): 1 (White), 2 (Black), 3(Asian), 4 (American Indian/Alaskan Native), 5 (Hispanic), 6 (Other race) > **race**
+- Sex of Respondent (`SEXVAR`): 1 (Male), 2(Female) > **sex**
+- Reported age in five-year age categories (`_AGEG5YR`): 1 (18 - 24), 2 (25 - 29), 3 (30 -34), 4 (35-39), 5 (40-44), 6 (45 - 49), 7 (50 - 54), 8 (55 - 59), 9 (60 - 64), 10 (65 - 69), 11 (70 - 74), 12 (75 - 79), 13 (80 or older), 14 (Don’t know/Refused/Missing) > **age**
+-  Level of education completed (`_EDUCAG`): 1	(Did not graduate High School), 2	(Graduated High School), 3	(Attended College or Technical School), 4	(Graduated from College or Technical School), 9 (Don’t know/Not sure/Missing) > **education**
+- Annual household income from all sources (`_INCOMG1`): 1 (Less than \$15,000), 2 (\$15,000 to < \$25,000), 3 (\$25,000 to < \$35,000), 4 (\$35,000 to < \$50,000), 5 (\$50,000 to < \$100,000), 6	(\$100,000 to < \$200,000), 7	(\$200,000 or more), 9	(Don’t know/Not sure/Missing) > **income**
+- Body Mass Index (`_BMI5`): 1 - 9999	(corresponding BMI) > **bmi**
+- On average, how many hours of sleep do you get in a 24-hour period? (`SLEPTIM1`): 1 - 24 (Number of hours), 77 (Don’t know/Not Sure), 99 (Refused) > **sleep**
+- Have you smoked at least 100 cigarettes in your entire life? (`SMOKE100`): 1 (Yes), 2 (No), 7 (Don't know/Not Sure), 9 (Refused) > **smoke**
+- Exercise in Past 30 Days (`EXERANY2`): 1 (Yes), 2 (No), 7 (Don't know/Not Sure), 9 (Refused) > **exercise**
+- (Ever told) you had a stroke (`CVDSTRK3`): 1 (Yes), 2 (No), 7 (Don't know/Not Sure), 9 (Refused) > **stroke**
+- (Ever told) you had coronary heart disease (CHD) or myocardial infarction (MI) (`_MICHD`): 1 (Yes), 2 (No) > **heart_disease**
+- Calculated total number of alcoholic beverages consumed per week (`_DRNKWK2`): 0 (Did not drink), 1 - 98999 (Number of drinks per week), 99900 (Don’t know/Not sure/Refused/Missing) > **alcohol**
+- Would you say that in general, your health is (`GENHLTH`): 1	(Excellent), 2	(Very good), 3	(Good), 4	(Fair),	5	(Poor), 7 (Don't know/Not Sure), 9 (Refused) > **health**
+
+```{r select-columns, include=FALSE}
+data <- data.table(diabetes = project_data$DIABETE4,
+                   race = project_data$`_IMPRACE`,
+                   sex = project_data$SEXVAR,
+                   age = project_data$`_AGEG5YR`,
+                   education = project_data$`_EDUCAG`,
+                   income = project_data$`_INCOMG1`,
+                   bmi = project_data$`_BMI5`,
+                   sleep = project_data$SLEPTIM1,
+                   smoke = project_data$SMOKE100,
+                   exercise = project_data$EXERANY2,
+                   stroke = project_data$CVDSTRK3,
+                   heart_disease = project_data$`_MICHD`,
+                   alcohol = project_data$`_DRNKWK2`,
+                   health = project_data$GENHLTH)
+dim(data)
+```
+
+The filtered dataset has 445132 rows and 14 columns as mentioned above.
+
+## 2.2 Check the import issues, modify and clean the values
+Firstly, I checked the values in the variables and found that they are consistent with the description on the website.  
+Then, I marked all values indicating Don’t know/Not Sure or Refused as NA since they don't provide useful information to the question. Also, I changed all number of 2 representing no into 0 to make it more consistent with our usage of data.    
+Lastly, for some specific variables, I made the following modifications. Some of the categorical variables are ordinal and can be represented by numbers in order. Therefore, I keep the numbers to make the models easier to fit and interpret.
+
+- `diabetes`: change the value to 0 for no diabetes or only during pregnancy, 1 for having diabetes, pre-diabetes, or borderline diabetes.
+- `race`: change the numbers to the corresponding race category in characters since it's nominal. Here, I mark American Indian/Alaska Native as AI/AN for short.
+- `sex`: change 1 to "Male", and 2 to "Female" for easier understanding.
+- `bmi`: divide all values by 100.
+- `alcohol`: divide all values by 100.
+
+```{r clean-values, include=FALSE}
+# diabetes
+print("Diabetes:")
+unique(data[, diabetes])
+data[diabetes == 4, diabetes := 1]
+data[diabetes == 2 | diabetes == 3, diabetes := 0]
+data[diabetes == 7 | diabetes == 9, diabetes := NA]
+unique(data[, diabetes])
+
+# race
+print("Race:")
+unique(data[, race])
+data[, race := as.character(race)]
+data[race == "1", race := "White"]
+data[race == "2", race := "Black"]
+data[race == "3", race := "Asian"]
+data[race == "4", race := "AI/AN"]
+data[race == "5", race := "Hispanic"]
+data[race == "6", race := "Other"]
+unique(data[, race])
+
+# sex
+print("Sex:")
+unique(data[, sex])
+data[, sex := as.character(sex)]
+data[sex == "1", sex := "Male"]
+data[sex == "2", sex := "Female"]
+unique(data[, sex])
+
+# age
+print("Age:")
+unique(data[, age])
+data[age == 14, age := NA]
+unique(data[, age])
+
+# education
+print("Education:")
+unique(data[, education])
+data[education == 9, education := NA]
+unique(data[, education])
+
+# income
+print("Income:")
+unique(data[, income])
+data[income == 9, income := NA]
+unique(data[, income])
+
+# bmi
+print("BMI:")
+summary(data$bmi)
+data[, bmi := bmi / 100]
+summary(data$bmi)
+
+# sleep
+print("Sleep:")
+unique(data[, sleep])
+data[sleep == 77 | sleep == 99, sleep := NA]
+unique(data[, sleep])
+
+# smoke
+print("Smoke:")
+unique(data[, smoke])
+data[smoke == 7 | smoke == 9, smoke := NA]
+data[smoke == 2, smoke := 0]
+unique(data[, smoke])
+
+# exercise
+print("Exercise:")
+unique(data[, exercise])
+data[exercise == 7 | exercise == 9, exercise := NA]
+data[exercise == 2, exercise := 0]
+unique(data[, exercise])
+
+# stroke
+print("Stroke:")
+unique(data[, stroke])
+data[stroke == 7 | stroke == 9, stroke := NA]
+data[stroke == 2, stroke := 0]
+unique(data[, stroke])
+
+# heart_disease
+print("Heart disease:")
+unique(data[, heart_disease])
+data[heart_disease == 2, heart_disease := 0]
+unique(data[, heart_disease])
+
+# alcohol
+print("Alcohol:")
+summary(data$alcohol)
+data[alcohol == 99900, alcohol := NA]
+data[, alcohol := alcohol / 100]
+summary(data$alcohol)
+
+# health
+print("Health:")
+unique(data[, health])
+data[health == 7 | health == 9, health := NA]
+unique(data[, health])
+```
+
+## 2.3 Check rates of missing values in the variables.
+```{r missing-rate, include=FALSE}
+# Overall missing rate
+mean(is.na(data))
+
+# Missing rate for the variables
+M <- colMeans(is.na(data))
+M[M>0]
+
+# Remove all NA values
+data_cleaned <- na.omit(data)
+dim(data_cleaned)
+
+# Missing rate for the variables after removing some NAs
+M_cleaned <- colMeans(is.na(data_cleaned))
+M_cleaned
+```
+
+The overall missing rate of the data is about 4.11%. The missing rates of most variables are below 10%, except that `bmi` has a missing rate of 10.96%, `alcohol` has a missing rate of 11.17%, and `income` has a missing rate of 21.58%. Since our dataset has 445132 rows, which is fairly large, removing some rows with NA values may not affect the result too much. Therefore, I removed all the NA values to make the future analysis easier to perform. The resulting dataset has 299903 rows and 14 columns.
+
+## 2.4 Change the type of key variables from string to factor as appropriate.
+```{r factor, include=FALSE}
+# Check the type of key variables
+sapply(data_cleaned, class)
+
+# Change the type of key variables from string to factor
+data_cleaned[, race := as.factor(race)]
+data_cleaned[, race := relevel(race, ref="White")]
+data_cleaned[, sex := as.factor(sex)]
+
+# Check the changed type of key variables
+sapply(data_cleaned, class)
+```
+
+Here, I converted the data type of `race` and `sex` from character to factor. Also, I releveled `race` so that the reference group in the future fitted regression models is **White**, the majority of `race`.
+
+## 2.5 Check the data against an external data source. Identify and handle any outliers.
+From 2.2, I've already checked that the data corresponds to the description on the website. After the modification, all categorical variables (including numeric variables representing categories) now only contain the specified values, which is desired. Most of their values are reasonable except `sleep`. Therefore, only `sleep`, `bmi`, and `alcohol` may possibly contain unreasonable data or outliers.
+
+### 2.5.1 Identify outliers for sleep
+
+```{r outliers-sleep, echo=FALSE}
+sleep_orig <- data_cleaned %>%
+  ggplot(aes(x=sleep)) + 
+  geom_bar()  +
+  labs(y = "Frequency", x = "Average Hours of Sleep in 24 Hours",
+       title = "Figure 1: Distributions of Sleep")
+
+data_cleaned <- data_cleaned[sleep <= 18]
+
+sleep_new <- data_cleaned %>%
+  ggplot(aes(x=sleep)) + 
+  geom_bar()  +
+  labs(y = "Frequency", x = "Average Hours of Sleep in 24 Hours",
+       title = "Barplot of Sleep (<= 18 Hours)")
+
+grid.arrange(sleep_orig, sleep_new, nrow=2)
+```
+
+From Figure 1, we can see that the distribution of `sleep` is right skewed. People with sleep disorder may sleep as less as 1 hour or as much as 14 to 18 hours in a 24-hour period. However, it's implausible that someone can sleep more than 18 hours on average. Therefore, I removed all rows with sleep more than 18 hours. The filtered dataset seems more normal and less skewed with most people sleep for 6 - 8 hours.
+
+### 2.5.2 Identify outliers for BMI
+
+```{r outliers-bmi, echo=FALSE}
+# Identify outliers for bmi
+par(mfrow = c(2, 2))
+boxplot(data_cleaned[, bmi], xlab = "BMI", main = "Boxplot for BMI", horizontal=TRUE)
+hist(data_cleaned[, bmi], xlab = "BMI", main = "Histogram for BMI")
+
+data_cleaned <- data_cleaned[bmi < 80]
+boxplot(data_cleaned[, bmi], xlab = "BMI", main = "Boxplot for BMI < 80", horizontal=TRUE)
+hist(data_cleaned[, bmi], xlab = "BMI", main = "Histogram for BMI < 80")
+
+mtext("Figure 2: Distributions of BMI", side = 3, line = -1, outer = TRUE)
+```
+
+From the boxplot and histogram for `bmi` in Figure 2, we can see that the data is right-skewed with multiple outliers with values above 45. From the paper [@bmi], individuals are classified based on body mass index (BMI) into categories such as underweight (BMI < 18.5), normal weight (BMI 18.5 to < 25), overweight (BMI 25 to <30), and obese (BMI $\geq$ 30), with obesity further categorized into grades: grade 1 (BMI 30 to <35), grade 2 (BMI 35 to <40), and grade 3 (BMI $\geq$ 40). This paper talks about a fatal case of super-super obesity (BMI > 80), which indicates that such cases are rare. Therefore, I removed all rows with BMI $\geq$ 80 so that the results are more general. From the plots of the dataset with BMI < 80 in Figure 1, we can see that the distribution of BMI is still right-skewed with most data between 20 and 40.
+
+### 2.5.3 Identify outliers for alcohol
+
+```{r outliers-alcohol, echo=FALSE}
+# Identify outliers for alcohol
+par(mfrow = c(2, 2))
+boxplot(data_cleaned[, alcohol], ylab = "Alcohol", main = "Boxplot for Alcohol", horizontal=TRUE)
+hist(data_cleaned[, alcohol], xlab = "Alcohol", main = "Histogram for Alcohol")
+
+data_cleaned <- data_cleaned[alcohol < 200]
+data_cleaned <- data_cleaned[, log_alcohol := log(1 + alcohol)]
+boxplot(data_cleaned[, log_alcohol], xlab = "Alcohol", main = "Boxplot for log(1 + Alcohol)", horizontal=TRUE)
+hist(data_cleaned[, log_alcohol], xlab = "Alcohol", main = "Histogram for log(1 + Alcohol)")
+
+mtext("Figure 3: Distributions of Alcohol", side = 3, line = -1, outer = TRUE)
+```
+
+From the boxplot and histogram for `alcohol` in Figure 3, we can see that the data is extremely right skewed with many outliers with values above 10. It's highly implausible to consume above 200 alcoholic drinks a week, which is about 30 drinks a day. Therefore, I removed all rows with alcohol $\geq$ 200. Also, since the data is too right skewed and the large values are far away from the median, I log-transformed `alcohol`. Since there are many 0s and values less than 1, I added 1 to `alcohol` and performed a log transformation, which preserved the relative size and positivity of the numbers. From the plots of the dataset with cleaned and transformed alcohol in Figure 2, we can see that the distribution of log(1 + alcohol) is still highly right-skewed. Most people consume around 0 drinks a week.
+
+```{r dim, eval=FALSE, include=FALSE}
+dim(data_cleaned)
+```
+
+After removing all the outliers, the dataset now contains 299671 rows and 15 columns (containing `alcohol` and `log_alcohol`).
+
+## 2.6 Tools used for data exploration
+- Summary tables are used to summarize the constitutions of the dataset and find out the proportion of each kind of data in the whole dataset.
+- Side-by-side barplots, proportional barplots, scatterplots, and boxplots are used to visualize the distributions of each variable given diabetes and find potential patterns in the distributions.
+- Correlation matrix and its plot are used to find the potential correlation between the predictor variables and the response variable `diabetes`.
+- A simple logistic regression model of all predictor variables is fitted to find the potential relationships between the predictor variables and the response variable `diabetes`.
+
+```{r head, eval=FALSE, include=FALSE}
+# Take a look at the preprocessed data
+head(data_cleaned) %>%
+  kable(caption = "Head of the Preprocessed Data") %>%
+  kable_paper("hover", full_width = FALSE)
+```
+
+
+# 3. Preliminary Results
+
+## 3.1 Data Summary
+
+### 3.1.1 Summary statistics for numerical variables
+
+The minimum, maximum, mean, standard deviation, count, and the quantiles of `bmi` and `alcohol` are listed in Table 1 below.
+```{r summary_num, echo=FALSE}
+sumtable(data_cleaned, vars = c("bmi", "log_alcohol"),
+         summ.names=c("Count", "Mean", "Standard Deviation", "Min", "1st Quantile", "Median", "3rd Quantile", "Max"),
+         title="Table 1: Summary Statistics for Numerical Variables",
+         add.median = TRUE,
+         simple.kable = TRUE)
+```
+
+From Table 1, we can see that both variables fall in the range that I designed before, and the means are larger than the medians, indicating the right-skewed distribution as seen in Figure 2 and Figure 3.
+
+### 3.1.2 Summary statistics for categorical variables
+
+```{r summary_function, echo=FALSE}
+sum_func <- function(col, rowname, table_num, position = "float_left"){
+  Count <- table(data_cleaned[[col]])
+  Proportion <- prop.table(Count)
+  summary_table <- cbind(Count, Proportion)
+  if (!is.null(rowname)){
+    rownames(summary_table) <- rowname
+  }
+  
+  summary_table %>%
+    kable(caption = paste0("Table ", table_num, ": Summary for ", col),
+          digits = 3) %>%
+    kable_paper("hover", full_width = FALSE, position = position)
+}
+```
+
+```{r summary_cat, echo=FALSE}
+sum_func("diabetes", rowname = c("No Diabetes", "Had Diabetes"), 2)
+
+sum_func("sex", rowname = NULL, 3)
+
+sum_func("smoke", rowname = c("Smoked No More Than 100 Cigarettes", "Smoked At Least 100 Cigarettes"), 4)
+
+sum_func("exercise", rowname = c("Didn't Exercise in Past 30 Days", "Exercised in Past 30 Days"), 6)
+
+sum_func("stroke", rowname = c("No Stroke", "Had Stroke"), 7)
+
+sum_func("heart_disease", rowname = c("No Heart Diseases", "Had Heart Diseases"), 8)
+
+sum_func("education", rowname = c("Did not graduate High School", "Graduated High School", "Attended College or Technical School", "Graduated from College or Technical School"), 9)
+
+sum_func("health", rowname = c("Excellent", "Very good", "Good", "Fair", "Poor"), 10)
+
+sum_func("race", rowname = NULL, 5, "left")
+
+sum_func("income", rowname = c("Less than $15,000", "$15,000 to < $25,000", "$25,000 to < $35,000", "$35,000 to < $50,000", "$50,000 to < $100,000", "$100,000 to < $200,000", "$200,000 or more"), 11)
+
+sum_func("age", rowname = c("18 - 24", "25 - 29", "30 -34", "35-39", "40-44", "45 - 49", "50 - 54", "55 - 59", "60 - 64", "65 - 69", "70 - 74", "75 - 79", "80 or older"), 12)
+
+sleep_col <- 1:18
+sleep_col <- paste(sleep_col, " Hour(s) of Sleep", sep="")
+sum_func("sleep", rowname = sleep_col, 13, "left")
+```
+\n
+
+From Table 2, we can see that the proportions of people with and without diabetes in this dataset have a large discrepancy. This means that we have less data about people with diabetes, which makes it a bit harder to find the potential risk factors that may cause diabetes.
+
+From Table 3, we can see that the proportions of males and females in the dataset are similar, which is a good signal indicating equal evaluation in the sex.
+
+From Table 4, the proportions of the heavy smokers and non-heavy smokers are roughly equal.
+
+From Table 5, we can see that most of the respondents are White, which means that the result of the dataset may generalize better to White people if there are differences among races. And it would be biased to use this dataset to explore the relationship between race and diabetes since there are much more samples of one category than all the other.
+
+From Table 6, people who exercised in the last 30 days are much more than people who didn't. But we have enough data for people who didn't exercise.
+
+From Tables 7 and 8, people who had a stroke or a heart disease are a very small proportion of the whole dataset. Therefore, it may not provide enough information to predict diabetes.
+
+From Table 9, there are more data on people who graduated from college or technical school, which is a bit concerning since we may not get enough information about people who didn't graduate high school.
+
+From Tables 10 and 11, the health data and the income data seem to concentrate on the middle categories. But this is fine since we have enough data for the other categories.
+
+From Table 12, we can see that the distributions of age among all respondents are roughly uniform with slightly more data in elderly than in young people. This allows us to fairly examine the relationship between age and diabetes.
+
+From Table 13, the sleep hour seems to follow a normal distribution as well. Most people sleep 6 to 8 hours. Although we don't have enough data for people with the most sleep and the least sleep, this follows the actual situation in the world and may give us some hint on the relationship between sleep hours and diabetes.
+
+## 3.2 Data Visualization
+
+### 3.2.1 A side-by-side barplot of the number of having diabetes in males and females.
+
+```{r barplot-sex, echo=FALSE}
+# Transform diabetes into a categorical variable and convert it into a factor
+data_vis <- copy(data_cleaned)
+data_vis[, diabetes := as.character(diabetes)]
+data_vis[diabetes == "1", diabetes := "Positive"]
+data_vis[diabetes == "0", diabetes := "Negative"]
+data_vis[, diabetes := as.factor(diabetes)]
+
+barplot_sex <- ggplot(data_vis, aes(x = sex, fill = diabetes)) + 
+  geom_bar(position = position_dodge(), alpha = 0.75) + 
+  labs(
+    title = "Figure 4: Number of Diabetes in Male and Female", 
+    x = "Sex", 
+    fill = "Diabetes"
+    ) + 
+  theme_bw()
+
+barplot_sex
+```
+
+From Figure 4, we can see that there are more people without diabetes than with diabetes in both sexes, but there are slightly more males with diabetes than females.
+
+### 3.2.2 Proportional barplot of the proportion of having diabetes in different categories of the categorical variables
+
+```{r barplot-race, include=FALSE}
+barplot_race <- ggplot(data_vis, aes(x = race, fill = diabetes, by = race)) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Figure 5: Proportion of Diabetes in Different Races", 
+    x = "Race", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  coord_flip()
+```
+
+```{r barplot-health, include=FALSE}
+data_vis[, health := as.factor(health)]
+barplot_health <- ggplot(data_vis, aes(x = health, fill = diabetes, by = health)) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Figure 6: Proportion of Diabetes in People With Different Health Condition", 
+    x = "Health", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  coord_flip()
+```
+
+```{r barplot-income, include=FALSE}
+data_vis[, income := as.factor(income)]
+barplot_income <- ggplot(data_vis, aes(x = income, fill = diabetes, by = income)) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Figure 7: Proportion of Diabetes in People with Different Income", 
+    x = "Income", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  coord_flip()
+```
+
+```{r barplot-education, include=FALSE}
+data_vis[, education := as.factor(education)]
+barplot_education <- ggplot(data_vis, aes(x = education, fill = diabetes, by = education)) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Figure 8: Proportion of Diabetes in People with Different Education Level", 
+    x = "Education Level", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  coord_flip()
+```
+
+```{r barplot-age, include=FALSE}
+data_vis[, age := as.factor(age)]
+barplot_age <- ggplot(data_vis, aes(x = age, fill = diabetes, by = age)) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Figure 9: Proportion of Diabetes in People in Different Age Range", 
+    x = "Age Range", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  coord_flip()
+```
+
+```{r show-barplots, echo=FALSE, fig.height=13, fig.width=13}
+grid.arrange(barplot_race, barplot_health, barplot_income, barplot_education, barplot_age, ncol = 2)
+```
+
+From Figure 5, we can see that there are more people without diabetes than with diabetes in all races. The proportion of having diabetes is the highest in American Indian/Alaskan Native (23.7%) and the lowest in Asian (14.1%).
+
+From Figure 6, we can see that as self-reported health condition goes from 1 (Excellent) to 5 (Poor), the proportion of diabetes increases as well. This surprisingly beautiful figure indicates that the health condition is negatively correlated with diabetes. The healthier people are, the lower the risk they have for diabetes. It's also possible that people who consider their health condition as excellent are more optimistic towards life, which prevents them from the disease. We need more data to examine if the confounding variable exists.
+
+From Figure 7, we can see that as income goes from 1 (Less than \$15,000) to 7 (\$200,000 or more), the proportion of diabetes decreases accordingly. This figure is also surprisingly beautiful, which indicates that income is negatively correlated with diabetes. The more income people have, the lower the risk they have for diabetes. It fits our intuition. Wealthy people may care more about their health conditions and may spend more money on keeping healthy. Therefore, they may have a lower risk of having diabetes.
+
+From Figure 8, we can see that as education level goes from 1 (Did not graduate High School) to 4 (Graduated from College or Technical School), the proportion of diabetes decreases accordingly. This figure indicates that the education level is negatively correlated with diabetes. The higher the education level people complete, the lower risk they have for diabetes.
+
+From Figure 9, we can see that as the age range goes from 1 (18 - 24) to 12 (75 - 79), the proportion of diabetes increases as well. This figure indicates that age is positively correlated with diabetes. The older people become, the higher the risk they have for diabetes. However, the proportion of diabetes decreases in 13 (80 or older). This is possibly due to some sad reasons that diabetes may negatively affect life expectancy.
+
+### 3.2.3 A scatterplot between BMI and having diabetes
+```{r scatter-bmi, echo=FALSE}
+data_cleaned %>% 
+  ggplot(aes(x = bmi, y = diabetes)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) +
+  labs(x = "Body Mass Index (BMI)", y = "Diabetes", title = "Figure 10: Scatterplot of Diabetes and BMI")
+```
+
+Since `diabetes` is actually a categorical variable, it's not that appropriate to use scatterplot for the visualization of the relationship between the two variables. However, from Figure 10, the fitted linear regression line indicates that there may be a positive relationship between BMI and diabetes. As BMI increases, the possibility of having diabetes increases as well. This corresponds with our intuition that people with obesity have a higher risk of diabetes.
+
+### 3.2.4 Boxplots between diabetes and BMI and log alcohol
+```{r boxplots, echo=FALSE}
+par(mfrow = c(1,2))
+boxplot(bmi~diabetes, xlab= "Diabetes", ylab="BMI", col = c("lightblue", "indianred1"), data = data_vis)
+boxplot(log_alcohol~diabetes, xlab= "Diabetes", ylab="Log Number of Alcoholic Drinks Per Week", col = c("lightblue", "indianred1"), data = data_vis)
+mtext("Figure 11: Boxplots Between Diabetes and Numerical Variables", side = 3, line = -1, outer = TRUE)
+```
+
+From Figure 11, we can see that the median BMI for diabetes patients is higher, while the median log number of alcoholic drinks per week is lower for diabetes patients. The previous one accords with intuition, but the latter one is surprising to me. I thought that drinking more alcohol may lead to diabetes. But it's possible that because of having diabetes, patients tend to drink less.
+
+## 3.3 Correlation Matrix
+```{r corr-matrix, echo=FALSE}
+data_numeric <- select_if(data_cleaned, is.numeric)
+correlation_matrix <- cor(data_numeric)
+
+diabetes_corr <-t(as.matrix(correlation_matrix[1, ]))
+rownames(diabetes_corr) <- c("Diabetes")
+diabetes_corr %>%
+  kable(caption = "Table 14: Correlation Matrix Between all Variables") %>%
+  kable_styling(html_font = "Cambria", full_width = FALSE)
+corrplot(correlation_matrix,
+         method="color",
+         title = "Figure 12: Correlation Matrix Between all Variables",
+         mar=c(0,0,1,0))
+```
+
+From the correlation matrix in Table 14 and the corresponding Figure 12, we can see that none of the variables have a very strong correlation with diabetes. However, among them, `age`, `bmi`, and `health` have a relatively strong correlation with diabetes (absolute value greater than 0.2). Additionally, `education`, `sleep`, `smoke`, and `alcohol` have a relatively weak correlation with diabetes (absolute value less than 0.1). Especially, sleep has the smallest relative correlation 0.0031693, which indicates that it may not be a good indicator of diabetes.
+
+## 3.4 Logistic Regression Model
+
+I fitted a logistic regression model between diabetes and all the other possible predictor variables to check whether the variable is statistically significant based on the p-value of the linear model.
+
+```{r logistic, echo=FALSE}
+logit_model <- glm(diabetes ~ . - alcohol, family = binomial, data_cleaned)
+summ(logit_model)
+```
+
+From the summary of the fitted logistic regression model, we can analyze the results in the following aspects.
+
+- **Model Fit:** The chi-square statistic with 17 degrees of freedom is 49370.84 with a p-value of 0.00, indicating a significant model fit. The Cragg-Uhler pseudo-R² is 0.26, indicating that approximately 26% of the variance in diabetes is explained by the predictor variables in the model. The McFadden pseudo-R² is 0.19. The AIC value is 214014.02 and the BIC value is 214205.01, which is fairly large.
+- **Intercept:** The intercept is -6.30 with a standard error of 0.06. This indicates the log-odds of the baseline group (when all other predictors are zero).
+- **Race (Asian, Black, Hispanic, Other, American Indian/Alaskan Native):** These coefficients represent the change in log-odds of having diabetes compared to the reference group White.
+- **Sex (Male):** Being male is associated with a 0.33 increase in the log-odds of having diabetes compared to being female.
+- **Age:** Each one-unit increase in age is associated with a 0.21 increase in the log-odds of having diabetes.
+- **Education:** Each one-unit increase in education level is associated with a 0.02 decrease in the log-odds of having diabetes.
+- **Income:** Each one-unit increase in income is associated with a 0.03 decrease in the log-odds of having diabetes.
+- **BMI (Body Mass Index):** Each one-unit increase in BMI is associated with a 0.07 increase in the log-odds of having diabetes.
+- **Sleep:** Sleep does not have a statistically significant association with the log-odds of having diabetes.
+- **Smoking:** Smoking is associated with a 0.06 increase in the log-odds of having diabetes.
+- **Exercise:** Exercising in the past 30 days is associated with a 0.11 decrease in the log-odds of having diabetes, which is a bit counter-intuitive and requires future investigation.
+- **Stroke:** Having a history of stroke is associated with a 0.22 increase in the log-odds of having diabetes.
+- **Heart Disease:** Having a history of heart disease is associated with a 0.38 increase in the log-odds of having diabetes.
+- **Health:** Self-reported health status is associated with a 0.47 increase in the log-odds of having diabetes. Healthier status indicates lower log-odds of having diabetes.
+- **Log Alcohol:** Each one-unit increase in the logarithm of alcohol consumption per week is associated with a 0.30 decrease in the log-odds of having diabetes, which is a bit counter-intuitive and requires future investigation.
+- All coefficients are statistically significant at the 0.001 significance level with p-values <2e-16, except for the `sleep` variable, which has a p-value of 0.36, indicating it does not have a statistically significant association with the log-odds of having diabetes.
+
+The logistic regression model fitted with all possible predictor variables may not be the best model. I used it here to explore the potential relationship between the variables and diabetes to find out which variables are statistically significant so that I may consider using them in the future model building. However, here, almost all the variables except sleep are statistically significant, which means that other techniques are required to find the most predictive risk factors.
+
+# 4. Summary
+The interpretations of the generated summary statistics and exploratory figures are listed below the corresponding statistics in Section 3. From these statistics, I can find out that `sleep` is a bad indicator of diabetes. However, it may be because I used sleep hours as a numerical variable. It's possible that having more sleep, moderate sleep, and less sleep are associated with having diabetes, which requires further investigation. Although all the other variables are statistically significant in predicting diabetes in the fitted logistic regression model, from the correlation matrix, `age`, `bmi`, and `health` may be relatively more predictive than the other features, while `education`, `sleep`, `smoke`, and `alcohol` may be considered as less predictive. From the barplots, `health`, `income`, `education`, and `age` may be good predictors of diabetes since the proportion of diabetes changes accordingly to their corresponding status in the categorical variables. Since **age** and **education** are considered significant in all cases, I would focus on evaluating the 2 variables in the later analysis.
+
+So far, since I haven't performed much model training to explore the effects of different variables on diabetes, I cannot draw any meaningful conclusions from my questions. In the later project, more kinds of models with different combinations of the predictor variables need to be fitted to figure out the most predictive risk factors of diabetes and to accurately predict whether an individual has diabetes. Meanwhile, the dataset needs to be split into train and validation sets to evaluate the model.
+
+# 5. References
