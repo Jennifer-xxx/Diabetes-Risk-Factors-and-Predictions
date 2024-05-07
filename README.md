@@ -1,8 +1,6 @@
 # JSC370 Final Project: Most Predictive Risk Factors of Type 2 Diabetes and Make Predictions
 
 # Links
-[Video]()
-
 [Website](https://jennifer-xxx.github.io/Diabetes-Risk-Factors-and-Predictions/index.html)
 
 [Report](Report.pdf)
