@@ -18,7 +18,7 @@ library(ggstats)
 ## Links
 This is the home page of my JSC370 Final Project website.
 
-The video presentation that walks through the website and the main findings of the analysis can be found [here]().
+The video presentation that walks through the website and the main findings of the analysis can be found [here](https://play.library.utoronto.ca/watch/93217901c4f33faf70cda2ed025c7b0d).
 
 The HTML report is on the **Report** page of the website.
 

@@ -9,6 +9,8 @@ navbar:
       href: Risk-Factors-of-Diabetes-And-Predictions.html
     - text: "Visualization"
       href: visualization.html
+    - text: "Video Overview"
+      href: https://play.library.utoronto.ca/watch/93217901c4f33faf70cda2ed025c7b0d
   right:
     - text: "JSC370 Home"
       href: https://jsc370.github.io/JSC370-2024/
