@@ -1,0 +1,3204 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yufei Liu" />
+
+
+<title>Most Predictive Risk Factors of Type 2 Diabetes and Make Predictions</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Diabetes Risk Factors and Predictions</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Risk-Factors-of-Diabetes-And-Predictions.html">Report</a>
+</li>
+<li>
+  <a href="visualization.html">Visualization</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://jsc370.github.io/JSC370-2024/">JSC370 Home</a>
+</li>
+<li>
+  <a href="report.pdf">Project Report</a>
+</li>
+<li>
+  <a href="https://github.com/Jennifer-xxx/Diabetes-Risk-Factors-and-Predictions">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Most Predictive Risk Factors of Type 2
+Diabetes and Make Predictions</h1>
+<h4 class="author">Yufei Liu</h4>
+
+</div>
+
+
+<p>This is the html version of the report. The PDF version of this
+report can be downloaded <a href="Report.pdf">here</a>.</p>
+<div id="introduction" class="section level1">
+<h1>1. Introduction</h1>
+<p>Diabetes is a serious chronic disease all over the world. The global
+prevalence of diabetes continues to skyrocket, exacerbated by a lack of
+awareness of the disease. In the US, approximately 38.4 million people,
+which is 11.6% of the US population, had diabetes in 2021 from the
+statistics in the National Diabetes Statistics Report <span
+class="citation">(CDC 2021)</span> by the Centers for Disease Control
+and Prevention (CDC).</p>
+<p>For long, researchers have been focused on examining the diabetes
+risks and predicting diabetes in the early stage. There are 2 main kinds
+of diabetes. By Cafasso <span class="citation">(Cafasso 2022)</span>,
+type 1 diabetes is an autoimmune disease likely caused by genes and
+viruses, while type 2 diabetes is possibly caused by lifestyle factors
+such as obesity and lack of exercise. Therefore, most researches focus
+on the potential causes of type 2 diabetes since it is more preventive.
+Since one of my family members has type 2 diabetes, I’m also interested
+in the cause of type 2 diabetes and what we can do to prevent ourselves
+from having type 2 diabetes. Therefore, I would like to explore
+<strong>the risk factors that are most predictive of type 2 diabetes and
+predict whether an individual has type 2 diabetes</strong> given the
+information provided in the Behavioral Risk Factor Surveillance System
+(BRFSS) survey data <span class="citation">(CDC 2022)</span>.</p>
+<p>The BRFSS survey, initiated by the CDC, is a state-based
+cross-sectional telephone survey used to gather prevalence data on risk
+behaviors and preventive health practices among adult U.S. residents.
+Since the data is developing annually, I’ll use the newest available
+BRFSS survey data in 2022 to explore my questions. The dataset contains
+445132 rows and 328 columns. Each row corresponds to a respondent. The
+columns contain the basic information of the respondents, their health
+conditions, answers to the health-related questions in the survey, and
+most importantly, whether the respondents have diabetes. Since there are
+too many columns and my analysis will only use a small portion of the
+potentially important risk factors, I will not list all the variables
+and would explain the used variables in the later sections. The meanings
+of all the variables and their possible values are listed on the
+documentation website <span class="citation">(CDC 2022)</span>.</p>
+</div>
+<div id="methods" class="section level1">
+<h1>2. Methods</h1>
+<div id="keep-only-columns-of-interest-and-rename-the-variables"
+class="section level2">
+<h2>2.1 Keep only columns of interest and rename the variables</h2>
+<p>From the relevant paper about some of the potential risk factors with
+diabetes <span class="citation">(Leila Ismail 2021)</span> and the
+available columns of the survey data, I selected the below columns for
+future analysis and renamed them for easy understanding.</p>
+<ul>
+<li>Question (<code>column name</code>): possible values (meaning of the
+value) &gt; <strong>renamed column name</strong></li>
+</ul>
+<p><strong>Response variable:</strong></p>
+<ul>
+<li>(Ever told) you had diabetes (<code>DIABETE4</code>): 1 (Yes), 2
+(Only during pregnancy), 3 (No), 4 (No, pre-diabetes or borderline
+diabetes), 7 (Don’t know/Not Sure), 9 (Refused) &gt;
+<strong>diabetes</strong></li>
+<li>According to your doctor or other health professional, what type of
+diabetes do you have? (<code>DIABTYPE</code>): 1 (Type 1), 2 (Type 2), 7
+(Don’t know/Not Sure), 9 (Refused) &gt;
+<strong>diabetes_type</strong></li>
+</ul>
+<p><strong>Predictor variables:</strong></p>
+<ul>
+<li>Imputed race/ethnicity value (<code>_IMPRACE</code>): 1 (White), 2
+(Black), 3(Asian), 4 (American Indian/Alaskan Native), 5 (Hispanic), 6
+(Other race) &gt; <strong>race</strong></li>
+<li>Sex of Respondent (<code>SEXVAR</code>): 1 (Male), 2(Female) &gt;
+<strong>sex</strong></li>
+<li>Reported age in five-year age categories (<code>_AGEG5YR</code>): 1
+(18 - 24), 2 (25 - 29), 3 (30 -34), 4 (35-39), 5 (40-44), 6 (45 - 49), 7
+(50 - 54), 8 (55 - 59), 9 (60 - 64), 10 (65 - 69), 11 (70 - 74), 12 (75
+- 79), 13 (80 or older), 14 (Don’t know/Refused/Missing) &gt;
+<strong>age</strong></li>
+<li>Level of education completed (<code>_EDUCAG</code>): 1 (Did not
+graduate High School), 2 (Graduated High School), 3 (Attended College or
+Technical School), 4 (Graduated from College or Technical School), 9
+(Don’t know/Not sure/Missing) &gt; <strong>education</strong></li>
+<li>Annual household income from all sources (<code>_INCOMG1</code>): 1
+(Less than $15,000), 2 ($15,000 to &lt; $25,000), 3 ($25,000 to &lt;
+$35,000), 4 ($35,000 to &lt; $50,000), 5 ($50,000 to &lt; $100,000), 6
+($100,000 to &lt; $200,000), 7 ($200,000 or more), 9 (Don’t know/Not
+sure/Missing) &gt; <strong>income</strong></li>
+<li>Body Mass Index (<code>_BMI5</code>): 1 - 9999 (corresponding BMI)
+&gt; <strong>bmi</strong></li>
+<li>On average, how many hours of sleep do you get in a 24-hour period?
+(<code>SLEPTIM1</code>): 1 - 24 (Number of hours), 77 (Don’t know/Not
+Sure), 99 (Refused) &gt; <strong>sleep</strong></li>
+<li>Have you smoked at least 100 cigarettes in your entire life?
+(<code>SMOKE100</code>): 1 (Yes), 2 (No), 7 (Don’t know/Not Sure), 9
+(Refused) &gt; <strong>smoke</strong></li>
+<li>Exercise in Past 30 Days (<code>EXERANY2</code>): 1 (Yes), 2 (No), 7
+(Don’t know/Not Sure), 9 (Refused) &gt; <strong>exercise</strong></li>
+<li>(Ever told) you had a stroke (<code>CVDSTRK3</code>): 1 (Yes), 2
+(No), 7 (Don’t know/Not Sure), 9 (Refused) &gt;
+<strong>stroke</strong></li>
+<li>(Ever told) you had coronary heart disease (CHD) or myocardial
+infarction (MI) (<code>_MICHD</code>): 1 (Yes), 2 (No) &gt;
+<strong>heart_disease</strong></li>
+<li>Heavy drinkers - adult men having more than 14 drinks per week and
+adult women having more than 7 drinks per week) (<code>_RFDRHV8</code>):
+1 (No), 2 (Yes), 9 (Don’t know/Refused/Missing) &gt;
+<strong>alcohol</strong></li>
+<li>Would you say that in general, your health is
+(<code>GENHLTH</code>): 1 (Excellent), 2 (Very good), 3 (Good), 4
+(Fair), 5 (Poor), 7 (Don’t know/Not Sure), 9 (Refused) &gt;
+<strong>health</strong></li>
+</ul>
+<p>The filtered dataset has 445132 rows and 15 columns as mentioned
+above.</p>
+</div>
+<div id="check-the-import-issues-modify-and-clean-the-values"
+class="section level2">
+<h2>2.2 Check the import issues, modify and clean the values</h2>
+<p>Firstly, I checked the values in the variables and found that they
+are consistent with the description on the website.</p>
+<p>Then, I marked all values indicating Don’t know/Not Sure or Refused
+as NA since they don’t provide useful information to the question. Also,
+I changed all number of 2 representing no into 0 to make it more
+consistent with our usage of data.</p>
+<p>Since <code>diabetes</code> and <code>diabetes_type</code> are the
+important response variables to be predicted, we can check the counts
+per category in <em>Table 1</em>. From <em>Table 1</em>, we can see that
+there are much more people without diabetes than other categories of
+diabetes. And among all people with diabetes, most of them are of type 2
+diabetes. Pre-diabetes or borderline diabetes (4) indicates a high risk
+of developing diabetes in the future <span class="citation">(Tabák
+2012)</span>. Having diabetes only during pregnancy is called
+gestational diabetes, which can be caused by different factors and
+increases the risk of having type 2 diabetes <span
+class="citation">(Clinic 2022)</span>. Therefore, the lifestyles of
+people who diagnosed as pre-diabetes or borderline diabetes or diabetes
+only during pregnancy may not be considered representative of healthy
+people. And we only compare people with type 2 diabetes
+(<code>diabetes</code> = 1 and <code>diabetes_type</code> = 2) with
+people who claimed not having diabetes (<code>diabetes</code> = 3).</p>
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 1: Counts of Diabetes and Diabetes Type for Each Category
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+diabetes
+</th>
+<th style="text-align:right;">
+diabetes_type
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1050
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+10559
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+966
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+48558
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3836
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+368722
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+10329
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+763
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+321
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>diabetes</code>: change the value to 0 for no diabetes, 1 for
+having type 2 diabetes, pre-diabetes, or borderline diabetes. Remove
+<code>diabetes_type</code> column. Remove the missing values.</li>
+</ul>
+<p>Lastly, for some specific variables, I made the following
+modifications. Some of the categorical variables are ordinal and can be
+represented by numbers in order. Therefore, I keep the numbers to make
+the models easier to fit and interpret.</p>
+<ul>
+<li><code>race</code>: change the numbers to the corresponding race
+category in characters since it’s nominal. Here, American Indian/Alaska
+Native is marked as as AI/AN for short.</li>
+<li><code>sex</code>: change 1 to “Male”, and 2 to “Female” for easier
+understanding.</li>
+<li><code>bmi</code>: divide all values by 100.</li>
+<li><code>healthy_sleep</code>: add a variable named
+<code>healthy_sleep</code> that categorize &gt;= 7 hours and &lt;= 10
+hours of sleep as 1 and other as 0. This is because researches suggest
+that regularly sleeping for more than 10 hours a day indicates
+oversleeping, which may indicate an underlying health condition <span
+class="citation">(Whelan 2019)</span>, and adults need 7 or more hours a
+night of sleep for good health. <span class="citation">(Olson
+2023)</span></li>
+</ul>
+</div>
+<div id="check-rates-of-missing-values-in-the-variables."
+class="section level2">
+<h2>2.3 Check rates of missing values in the variables.</h2>
+<p>The overall missing rate of the data is about 4.07%. The missing
+rates of most variables are below 10%, except that <code>bmi</code> has
+a missing rate of 10.98%, <code>alcohol</code> has a missing rate of
+11.27%, and <code>income</code> has a missing rate of 21.54%. Since our
+dataset has 379281 rows after cleaning missing data of
+<code>diabetes</code>, which is fairly large, removing some rows with NA
+values may not affect the result too much. Therefore, I removed all the
+NA values to make the future analysis easier to perform. The resulting
+dataset has 256564 rows and 14 columns.</p>
+</div>
+<div
+id="change-the-type-of-key-variables-from-string-to-factor-as-appropriate."
+class="section level2">
+<h2>2.4 Change the type of key variables from string to factor as
+appropriate.</h2>
+<p>Here, I converted the data type of <code>race</code> and
+<code>sex</code> from character to factor. Also, I releveled
+<code>race</code> so that the reference group in the future fitted
+regression models is <strong>White</strong>, the majority of
+<code>race</code>.</p>
+</div>
+<div id="identify-and-handle-any-outliers-or-imbalanced-dataset."
+class="section level2">
+<h2>2.5 Identify and handle any outliers or imbalanced dataset.</h2>
+<p>From 2.2, I’ve already checked that the data corresponds to the
+description on the website. After the modification, all categorical
+variables (including numeric variables representing categories) now only
+contain the specified values, which is desired. Therefore, only
+<code>bmi</code>may possibly contain unreasonable data or outliers.</p>
+<div id="identify-outliers-for-bmi" class="section level3">
+<h3>2.5.1 Identify outliers for BMI</h3>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/outliers-bmi-1.png" width="672" /></p>
+<p>From the boxplot and histogram for <code>bmi</code> in <em>Figure
+1</em>, we can see that the data is right-skewed with multiple outliers
+with values above 45. From the paper <span class="citation">(Toshihiko
+Yoshizawa 2018)</span>, individuals are classified based on body mass
+index (BMI) into categories such as underweight (BMI &lt; 18.5), normal
+weight (BMI 18.5 to &lt; 25), overweight (BMI 25 to &lt;30), and obese
+(BMI <span class="math inline">\(\geq\)</span> 30), with obesity further
+categorized into grades: grade 1 (BMI 30 to &lt;35), grade 2 (BMI 35 to
+&lt;40), and grade 3 (BMI <span class="math inline">\(\geq\)</span> 40).
+This paper talks about a fatal case of super-super obesity (BMI &gt;
+80), which indicates that such cases are rare. Therefore, I removed all
+rows with BMI <span class="math inline">\(\geq\)</span> 80 so that the
+results are more general. From the plots of the dataset with BMI &lt; 80
+in <em>Figure 1</em>, we can see that the distribution of BMI is still
+right-skewed with most data between 20 and 40.</p>
+</div>
+<div id="handle-imbalanced-dataset" class="section level3">
+<h3>2.5.2 Handle imbalanced dataset</h3>
+<p>From <em>Table 1</em>, there are much more people without diabetes
+than with diabetes, which may affect the performance of the model.
+Therefore, downsampling the majority class is performed on the dataset
+to make the two classes contain equal number of observations.</p>
+<p>After removing all the outliers and downsampling the dataset, the
+dataset now contains 14316 rows and 14 columns.</p>
+</div>
+</div>
+<div id="tools-used-for-data-analysis" class="section level2">
+<h2>2.6 Tools used for data analysis</h2>
+<ul>
+<li>Summary tables are used to summarize the constitutions of the
+dataset and find out the proportion of each kind of data in the whole
+dataset.</li>
+<li>Proportional barplots, and boxplots are used to visualize the
+distributions of each variable given diabetes and find potential
+patterns in the distributions.</li>
+<li>Correlation matrix and its plot are used to find the potential
+correlation between the predictor variables and the response variable
+<code>diabetes</code>. If the correlations between predictors are too
+high, multicollinearity need to be checked after fitting the linear
+model using variance inflation factor (VIF).</li>
+<li>Split the dataset into training and testing (70-30%) for model
+performance evaluation.</li>
+<li>A simple logistic regression model of all predictor variables is
+fitted to find the potential relationships between the predictor
+variables and the response variable <code>diabetes</code>. stepAIC is
+performed to find the model with the smallest AIC.</li>
+<li>A classification tree is fitted to predict <code>diabetes</code>.
+Then, it is pruned based on the optimal complexity parameter.</li>
+<li>Bagging, random forests, gradient boosting machine, and xgboost with
+grid search are trained to predict diabetes. The variable importance
+plots indicate the important predictors of <code>diabetes</code>
+suggested by the corresponding model.</li>
+<li>The performances of all models are evaluated and compared with each
+other to select the best model. The important factors indicated by each
+model are combined to generate the final most predictive risk
+factors.</li>
+</ul>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1>3. Results</h1>
+<div id="data-summary" class="section level2">
+<h2>3.1 Data Summary</h2>
+<div id="summary-statistics-for-numerical-variables"
+class="section level3">
+<h3>3.1.1 Summary statistics for numerical variables</h3>
+<p>The minimum, maximum, mean, standard deviation, count, and the
+quantiles of <code>bmi</code> are listed in <em>Table 2</em> below.</p>
+<table>
+<caption>Table 2: Summary Statistics for BMI</caption>
+<colgroup>
+<col width="11%" />
+<col width="8%" />
+<col width="6%" />
+<col width="23%" />
+<col width="4%" />
+<col width="16%" />
+<col width="8%" />
+<col width="16%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Count</th>
+<th align="left">Mean</th>
+<th align="left">Standard Deviation</th>
+<th align="left">Min</th>
+<th align="left">1st Quantile</th>
+<th align="left">Median</th>
+<th align="left">3rd Quantile</th>
+<th align="left">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bmi</td>
+<td align="left">256531</td>
+<td align="left">28</td>
+<td align="left">6.2</td>
+<td align="left">12</td>
+<td align="left">24</td>
+<td align="left">27</td>
+<td align="left">31</td>
+<td align="left">80</td>
+</tr>
+</tbody>
+</table>
+<p>From <em>Table 2</em>, we can see that <code>bmi</code> fall in the
+range that I designed before, and the mean (28) is a bit larger than the
+median (27), indicating the slightly right-skewed distribution as shown
+in <em>Figure 1</em>.</p>
+</div>
+<div id="summary-statistics-for-categorical-variables"
+class="section level3">
+<h3>3.1.2 Summary statistics for categorical variables</h3>
+<div id="pkmljysbgj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pkmljysbgj table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#pkmljysbgj thead, #pkmljysbgj tbody, #pkmljysbgj tfoot, #pkmljysbgj tr, #pkmljysbgj td, #pkmljysbgj th {
+  border-style: none;
+}
+
+#pkmljysbgj p {
+  margin: 0;
+  padding: 0;
+}
+
+#pkmljysbgj .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#pkmljysbgj .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pkmljysbgj .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pkmljysbgj .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pkmljysbgj .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pkmljysbgj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pkmljysbgj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pkmljysbgj .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pkmljysbgj .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#pkmljysbgj .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#pkmljysbgj .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pkmljysbgj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pkmljysbgj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pkmljysbgj .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pkmljysbgj .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pkmljysbgj .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#pkmljysbgj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#pkmljysbgj .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#pkmljysbgj .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pkmljysbgj .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#pkmljysbgj .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pkmljysbgj .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pkmljysbgj .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pkmljysbgj .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pkmljysbgj .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pkmljysbgj .gt_left {
+  text-align: left;
+}
+
+#pkmljysbgj .gt_center {
+  text-align: center;
+}
+
+#pkmljysbgj .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pkmljysbgj .gt_font_normal {
+  font-weight: normal;
+}
+
+#pkmljysbgj .gt_font_bold {
+  font-weight: bold;
+}
+
+#pkmljysbgj .gt_font_italic {
+  font-style: italic;
+}
+
+#pkmljysbgj .gt_super {
+  font-size: 65%;
+}
+
+#pkmljysbgj .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#pkmljysbgj .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#pkmljysbgj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#pkmljysbgj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#pkmljysbgj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#pkmljysbgj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#pkmljysbgj .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <caption><strong>Table 3: Summary Statistics for Categorical Variables</strong></caption>
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Variable&lt;/strong&gt;"><strong>Variable</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Overall&lt;/strong&gt;, N = 14,316&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;"><strong>Overall</strong>, N = 14,316<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Negative&lt;/strong&gt;, N = 7,158&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;"><strong>Negative</strong>, N = 7,158<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Positive&lt;/strong&gt;, N = 7,158&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;"><strong>Positive</strong>, N = 7,158<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;p-value&lt;/strong&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt;"><strong>p-value</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>2</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">race</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    White</td>
+<td headers="stat_0" class="gt_row gt_center">10,902 (76%)</td>
+<td headers="stat_1" class="gt_row gt_center">5,545 (77%)</td>
+<td headers="stat_2" class="gt_row gt_center">5,357 (75%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    AI/AN</td>
+<td headers="stat_0" class="gt_row gt_center">314 (2.2%)</td>
+<td headers="stat_1" class="gt_row gt_center">77 (1.1%)</td>
+<td headers="stat_2" class="gt_row gt_center">237 (3.3%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Asian</td>
+<td headers="stat_0" class="gt_row gt_center">252 (1.8%)</td>
+<td headers="stat_1" class="gt_row gt_center">208 (2.9%)</td>
+<td headers="stat_2" class="gt_row gt_center">44 (0.6%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Black</td>
+<td headers="stat_0" class="gt_row gt_center">1,668 (12%)</td>
+<td headers="stat_1" class="gt_row gt_center">502 (7.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,166 (16%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Hispanic</td>
+<td headers="stat_0" class="gt_row gt_center">851 (5.9%)</td>
+<td headers="stat_1" class="gt_row gt_center">638 (8.9%)</td>
+<td headers="stat_2" class="gt_row gt_center">213 (3.0%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Other</td>
+<td headers="stat_0" class="gt_row gt_center">329 (2.3%)</td>
+<td headers="stat_1" class="gt_row gt_center">188 (2.6%)</td>
+<td headers="stat_2" class="gt_row gt_center">141 (2.0%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">sex</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center">0.10</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Female</td>
+<td headers="stat_0" class="gt_row gt_center">7,082 (49%)</td>
+<td headers="stat_1" class="gt_row gt_center">3,590 (50%)</td>
+<td headers="stat_2" class="gt_row gt_center">3,492 (49%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Male</td>
+<td headers="stat_0" class="gt_row gt_center">7,234 (51%)</td>
+<td headers="stat_1" class="gt_row gt_center">3,568 (50%)</td>
+<td headers="stat_2" class="gt_row gt_center">3,666 (51%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">age</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    18 - 24</td>
+<td headers="stat_0" class="gt_row gt_center">490 (3.4%)</td>
+<td headers="stat_1" class="gt_row gt_center">477 (6.7%)</td>
+<td headers="stat_2" class="gt_row gt_center">13 (0.2%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    25 - 29</td>
+<td headers="stat_0" class="gt_row gt_center">427 (3.0%)</td>
+<td headers="stat_1" class="gt_row gt_center">410 (5.7%)</td>
+<td headers="stat_2" class="gt_row gt_center">17 (0.2%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    30 - 34</td>
+<td headers="stat_0" class="gt_row gt_center">539 (3.8%)</td>
+<td headers="stat_1" class="gt_row gt_center">491 (6.9%)</td>
+<td headers="stat_2" class="gt_row gt_center">48 (0.7%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    35 - 39</td>
+<td headers="stat_0" class="gt_row gt_center">623 (4.4%)</td>
+<td headers="stat_1" class="gt_row gt_center">527 (7.4%)</td>
+<td headers="stat_2" class="gt_row gt_center">96 (1.3%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    40 - 44</td>
+<td headers="stat_0" class="gt_row gt_center">840 (5.9%)</td>
+<td headers="stat_1" class="gt_row gt_center">636 (8.9%)</td>
+<td headers="stat_2" class="gt_row gt_center">204 (2.8%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    45 - 49</td>
+<td headers="stat_0" class="gt_row gt_center">855 (6.0%)</td>
+<td headers="stat_1" class="gt_row gt_center">523 (7.3%)</td>
+<td headers="stat_2" class="gt_row gt_center">332 (4.6%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    50 - 54</td>
+<td headers="stat_0" class="gt_row gt_center">1,159 (8.1%)</td>
+<td headers="stat_1" class="gt_row gt_center">604 (8.4%)</td>
+<td headers="stat_2" class="gt_row gt_center">555 (7.8%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    55 - 59</td>
+<td headers="stat_0" class="gt_row gt_center">1,305 (9.1%)</td>
+<td headers="stat_1" class="gt_row gt_center">576 (8.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">729 (10%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    60 - 64</td>
+<td headers="stat_0" class="gt_row gt_center">1,636 (11%)</td>
+<td headers="stat_1" class="gt_row gt_center">647 (9.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">989 (14%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    65 - 69</td>
+<td headers="stat_0" class="gt_row gt_center">1,915 (13%)</td>
+<td headers="stat_1" class="gt_row gt_center">653 (9.1%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,262 (18%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    70 - 74</td>
+<td headers="stat_0" class="gt_row gt_center">1,918 (13%)</td>
+<td headers="stat_1" class="gt_row gt_center">633 (8.8%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,285 (18%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    75 - 79</td>
+<td headers="stat_0" class="gt_row gt_center">1,360 (9.5%)</td>
+<td headers="stat_1" class="gt_row gt_center">451 (6.3%)</td>
+<td headers="stat_2" class="gt_row gt_center">909 (13%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    80 or older</td>
+<td headers="stat_0" class="gt_row gt_center">1,249 (8.7%)</td>
+<td headers="stat_1" class="gt_row gt_center">530 (7.4%)</td>
+<td headers="stat_2" class="gt_row gt_center">719 (10%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">education</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Attended College or Technical School</td>
+<td headers="stat_0" class="gt_row gt_center">4,146 (29%)</td>
+<td headers="stat_1" class="gt_row gt_center">1,905 (27%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,241 (31%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Did not graduate High School</td>
+<td headers="stat_0" class="gt_row gt_center">793 (5.5%)</td>
+<td headers="stat_1" class="gt_row gt_center">340 (4.7%)</td>
+<td headers="stat_2" class="gt_row gt_center">453 (6.3%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Graduated from College or Technical School</td>
+<td headers="stat_0" class="gt_row gt_center">5,767 (40%)</td>
+<td headers="stat_1" class="gt_row gt_center">3,317 (46%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,450 (34%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Graduated High School</td>
+<td headers="stat_0" class="gt_row gt_center">3,610 (25%)</td>
+<td headers="stat_1" class="gt_row gt_center">1,596 (22%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,014 (28%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">income</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $100,000 to &lt; $200,000</td>
+<td headers="stat_0" class="gt_row gt_center">2,531 (18%)</td>
+<td headers="stat_1" class="gt_row gt_center">1,627 (23%)</td>
+<td headers="stat_2" class="gt_row gt_center">904 (13%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $15,000 to &lt; $25,000</td>
+<td headers="stat_0" class="gt_row gt_center">1,601 (11%)</td>
+<td headers="stat_1" class="gt_row gt_center">605 (8.5%)</td>
+<td headers="stat_2" class="gt_row gt_center">996 (14%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $200,000 or more</td>
+<td headers="stat_0" class="gt_row gt_center">684 (4.8%)</td>
+<td headers="stat_1" class="gt_row gt_center">542 (7.6%)</td>
+<td headers="stat_2" class="gt_row gt_center">142 (2.0%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $25,000 to &lt; $35,000</td>
+<td headers="stat_0" class="gt_row gt_center">1,994 (14%)</td>
+<td headers="stat_1" class="gt_row gt_center">848 (12%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,146 (16%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $35,000 to &lt; $50,000</td>
+<td headers="stat_0" class="gt_row gt_center">2,078 (15%)</td>
+<td headers="stat_1" class="gt_row gt_center">900 (13%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,178 (16%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    $50,000 to &lt; $100,000</td>
+<td headers="stat_0" class="gt_row gt_center">4,396 (31%)</td>
+<td headers="stat_1" class="gt_row gt_center">2,268 (32%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,128 (30%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Less than $15,000</td>
+<td headers="stat_0" class="gt_row gt_center">1,032 (7.2%)</td>
+<td headers="stat_1" class="gt_row gt_center">368 (5.1%)</td>
+<td headers="stat_2" class="gt_row gt_center">664 (9.3%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">sleep</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Sleep &lt; 7 or &gt; 10 hours</td>
+<td headers="stat_0" class="gt_row gt_center">5,087 (36%)</td>
+<td headers="stat_1" class="gt_row gt_center">2,375 (33%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,712 (38%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Sleep between 7 and 10 hours (inclusive)</td>
+<td headers="stat_0" class="gt_row gt_center">9,229 (64%)</td>
+<td headers="stat_1" class="gt_row gt_center">4,783 (67%)</td>
+<td headers="stat_2" class="gt_row gt_center">4,446 (62%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">smoke</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Smoked More Than 100 Cigarettes</td>
+<td headers="stat_0" class="gt_row gt_center">6,478 (45%)</td>
+<td headers="stat_1" class="gt_row gt_center">2,899 (41%)</td>
+<td headers="stat_2" class="gt_row gt_center">3,579 (50%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Smoked No More Than 100 Cigarettes</td>
+<td headers="stat_0" class="gt_row gt_center">7,838 (55%)</td>
+<td headers="stat_1" class="gt_row gt_center">4,259 (59%)</td>
+<td headers="stat_2" class="gt_row gt_center">3,579 (50%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">exercise</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Exercised</td>
+<td headers="stat_0" class="gt_row gt_center">10,082 (70%)</td>
+<td headers="stat_1" class="gt_row gt_center">5,721 (80%)</td>
+<td headers="stat_2" class="gt_row gt_center">4,361 (61%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    No Exercise</td>
+<td headers="stat_0" class="gt_row gt_center">4,234 (30%)</td>
+<td headers="stat_1" class="gt_row gt_center">1,437 (20%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,797 (39%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">stroke</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Had Stroke</td>
+<td headers="stat_0" class="gt_row gt_center">978 (6.8%)</td>
+<td headers="stat_1" class="gt_row gt_center">238 (3.3%)</td>
+<td headers="stat_2" class="gt_row gt_center">740 (10%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Never Had Stroke</td>
+<td headers="stat_0" class="gt_row gt_center">13,338 (93%)</td>
+<td headers="stat_1" class="gt_row gt_center">6,920 (97%)</td>
+<td headers="stat_2" class="gt_row gt_center">6,418 (90%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">heart_disease</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Had Heart Disease</td>
+<td headers="stat_0" class="gt_row gt_center">2,166 (15%)</td>
+<td headers="stat_1" class="gt_row gt_center">523 (7.3%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,643 (23%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Never Had Heart Disease</td>
+<td headers="stat_0" class="gt_row gt_center">12,150 (85%)</td>
+<td headers="stat_1" class="gt_row gt_center">6,635 (93%)</td>
+<td headers="stat_2" class="gt_row gt_center">5,515 (77%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">alcohol</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Heavy Drinker</td>
+<td headers="stat_0" class="gt_row gt_center">792 (5.5%)</td>
+<td headers="stat_1" class="gt_row gt_center">585 (8.2%)</td>
+<td headers="stat_2" class="gt_row gt_center">207 (2.9%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Non-Heavy Drinker</td>
+<td headers="stat_0" class="gt_row gt_center">13,524 (94%)</td>
+<td headers="stat_1" class="gt_row gt_center">6,573 (92%)</td>
+<td headers="stat_2" class="gt_row gt_center">6,951 (97%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">health</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Excellent</td>
+<td headers="stat_0" class="gt_row gt_center">1,563 (11%)</td>
+<td headers="stat_1" class="gt_row gt_center">1,315 (18%)</td>
+<td headers="stat_2" class="gt_row gt_center">248 (3.5%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Fair</td>
+<td headers="stat_0" class="gt_row gt_center">2,760 (19%)</td>
+<td headers="stat_1" class="gt_row gt_center">808 (11%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,952 (27%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Good</td>
+<td headers="stat_0" class="gt_row gt_center">4,980 (35%)</td>
+<td headers="stat_1" class="gt_row gt_center">2,196 (31%)</td>
+<td headers="stat_2" class="gt_row gt_center">2,784 (39%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Poor</td>
+<td headers="stat_0" class="gt_row gt_center">1,026 (7.2%)</td>
+<td headers="stat_1" class="gt_row gt_center">214 (3.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">812 (11%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Very good</td>
+<td headers="stat_0" class="gt_row gt_center">3,987 (28%)</td>
+<td headers="stat_1" class="gt_row gt_center">2,625 (37%)</td>
+<td headers="stat_2" class="gt_row gt_center">1,362 (19%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="5"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> n (%)</td>
+    </tr>
+    <tr>
+      <td class="gt_footnote" colspan="5"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>2</sup></span> Pearson’s Chi-squared test</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+<p>From <em>Table 3</em>, the distributions of <code>sex</code> and
+<code>smoke</code> are roughly the same among the two categories, which
+is a good sign indicating unbiasedness of the predictor in the
+dataset.<br />
+The distributions of <code>age</code>, <code>income</code>, and
+<code>health</code> are normal with most people in the middle categories
+and fewer people in the extreme categories, which corresponds with the
+real-world situation as expected.<br />
+However, there are much more white people than other races, and much
+more people who had appropriate hours of sleep or exercised or never had
+stroke or heart disease than the opposite. This also accords with the
+actual situation since the survey is performed in the US and there are
+more healthy people in the world. Additionally, education proportion
+suggests that this study population is on the more well educated side
+than average. This bias is not present in a study that explores the
+relationship between diabetes and education <span
+class="citation">(Borrell LN 2006)</span>, which is of concern. All of
+these may present bias in the analysis, which may require future
+investigation. All Pearson’s Chi-squared tests except sex have a p-value
+of less than 0.001, indicating strong evidence against the null
+hypothesis that the observed differences within the categories appear by
+chance. Sex may not be a good indicator from the test.</p>
+</div>
+</div>
+<div id="data-visualization" class="section level2">
+<h2>3.2 Data Visualization</h2>
+<p>All data visualization and analysis can be found on the website <a
+href="https://jennifer-xxx.github.io/Diabetes-Risk-Factors-and-Predictions/index.html">Home</a>
+and <a
+href="(https://jennifer-xxx.github.io/Diabetes-Risk-Factors-and-Predictions/visualization.html)">Visualization</a>
+page. To distinguish the plot on the website and the figures in the
+report, I would use <em>Plot + number</em> to represent the plots on the
+website and <em>Figure + number</em> to represent figures in the
+report.</p>
+<p>From the <em>Plot 1</em>, we can figure out the distributions of BMI
+among people with diabetes and people without diabetes. The boxplot
+suggests that <code>bmi</code> is positively correlated with diabetes
+since people with diabetes tend to have higher BMI.</p>
+<p><em>Plot 2</em> shows the distribution of age for people with
+diabetes and people without diabetes. The plot indicates that
+<code>age</code> may have a positive relationship with diabetes since
+most people with diabetes have age over 50.</p>
+<p><em>Plots 3-13</em> are the proportional barplots of diabetes among
+different categories in the categorical variables. From the patterns in
+those plots, we may infer that <code>smoke</code>, <code>stroke</code>,
+and <code>heart_disease</code> are positively correlated with diabetes,
+while <code>income</code>, <code>education</code>, <code>sleep</code>,
+<code>exercise</code>, <code>alcohol</code>, and <code>health</code>
+have a negative relationship with diabetes. Among them, the most
+surprising result is that drinking more <code>alcohol</code> leads to a
+heavy drop in proportion of having <code>diabetes</code>, which may
+require future investigation.</p>
+<p>More machine learning techniques are required to reach more rigorous
+conclusions about the relationships between the predictors and the
+response variable <code>diabetes</code>.</p>
+</div>
+<div id="correlation-matrix" class="section level2">
+<h2>3.3 Correlation Matrix</h2>
+<table class="table" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 4: Correlation Matrix Between all Variables
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+age
+</th>
+<th style="text-align:right;">
+education
+</th>
+<th style="text-align:right;">
+income
+</th>
+<th style="text-align:right;">
+bmi
+</th>
+<th style="text-align:right;">
+sleep
+</th>
+<th style="text-align:right;">
+smoke
+</th>
+<th style="text-align:right;">
+exercise
+</th>
+<th style="text-align:right;">
+stroke
+</th>
+<th style="text-align:right;">
+heart_disease
+</th>
+<th style="text-align:right;">
+alcohol
+</th>
+<th style="text-align:right;">
+health
+</th>
+<th style="text-align:right;">
+diabetes
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Diabetes
+</td>
+<td style="text-align:right;">
+0.3769136
+</td>
+<td style="text-align:right;">
+-0.1128349
+</td>
+<td style="text-align:right;">
+-0.2048007
+</td>
+<td style="text-align:right;">
+0.3115016
+</td>
+<td style="text-align:right;">
+-0.0491838
+</td>
+<td style="text-align:right;">
+0.0954302
+</td>
+<td style="text-align:right;">
+-0.2081566
+</td>
+<td style="text-align:right;">
+0.1389917
+</td>
+<td style="text-align:right;">
+0.2183236
+</td>
+<td style="text-align:right;">
+-0.1154986
+</td>
+<td style="text-align:right;">
+0.3706679
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/corr-matrix-1.png" width="672" /></p>
+<p>From the <code>diabetes</code> row of the correlation matrix in
+<em>Table 4</em>, we can see that none of the variables have a very
+strong correlation with diabetes. However, among them, <code>age</code>,
+<code>bmi</code>, and <code>health</code> have a relatively strong
+correlation with diabetes (absolute value greater than 0.3).
+Additionally, <code>sleep</code> and <code>smoke</code> have a
+relatively weak correlation with diabetes (absolute value less than
+0.1). Especially, <code>sleep</code> has the smallest relative
+correlation -0.0491838, which indicates that it may not be a good
+indicator of diabetes.</p>
+<p>From the correlation plot in <em>Figure 2</em>, the correlation
+coefficients between <code>diabetes</code> and <code>age</code>,
+<code>income</code>, <code>exercise</code>, <code>health</code> are
+statistically significant, which indicates that they may be important
+risk factors. However, the correlation between <code>health</code> and
+three other variables, <code>income</code> and <code>education</code>
+are statistically significant. After checking the correlations, their
+absolute values are below 0.3, which seems fine. But VIF may be used to
+check multicollinearity after fitting the linear model.</p>
+</div>
+<div id="split-the-dataset" class="section level2">
+<h2>3.4 Split the Dataset</h2>
+<p>Here, the dataset is splitted into 70% for training and 30% for
+testing. This is used to compare the performance of different models and
+select the model with best test accuracy.</p>
+<p>After the splitting, the training data contains 10021 rows, and the
+testing data has 4295 rows.</p>
+</div>
+<div id="logistic-regression-model" class="section level2">
+<h2>3.5 Logistic Regression Model</h2>
+<p>A logistic regression model between diabetes and all the other
+possible predictor variables is fitted to check whether the variable is
+statistically significant based on the p-value of the linear model. The
+summary of the model is as below.</p>
+<table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">
+Table 5: Summary of the Full Logistic Regression Model
+</caption>
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="5" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+diabetes
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Odds Ratios
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+std. Error
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+CI
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Statistic
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+(Intercept)
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00 – 0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-29.58
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceAI/AN
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+3.81
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.69
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.68 – 5.49
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+7.34
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceAsian
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.71
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.15
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.46 – 1.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.58
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.113
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceBlack
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.52
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.20
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.15 – 2.96
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+11.35
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceHispanic
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.54
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.43 – 0.68
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-5.21
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceOther
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.11
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.19
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.80 – 1.55
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.65
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.517
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+sexMale
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.30
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.18 – 1.43
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+5.15
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+age
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.31
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.01
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.29 – 1.34
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+28.37
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+education
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.03
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.94 – 1.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.959
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+income
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.94
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.91 – 0.98
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-3.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.002</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+bmi
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.11
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.10 – 1.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+25.16
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+sleep
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.89
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.80 – 0.99
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-2.14
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.032</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+smoke
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.92 – 1.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.33
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.739
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+exercise
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.79
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.71 – 0.88
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-4.09
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+stroke
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.24
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.01 – 1.52
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.09
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.037</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+heart_disease
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.62
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.40 – 1.88
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+6.39
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+alcohol
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.33 – 0.53
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-7.37
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+health
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.67
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.58 – 1.76
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+18.54
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="5">
+10021
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+R<sup>2</sup> Tjur
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="5">
+0.338
+</td>
+</tr>
+</table>
+<ul>
+<li>The <span class="math inline">\(R^2\)</span> Tjur is 0.338,
+indicating that approximately 33.8% of the variance in diabetes is
+explained by the predictor variables in the model, which is not very
+large for a model to predict <code>diabetes</code> well.</li>
+<li><strong>Intercept:</strong> The intercept is 0 with a standard error
+of 0. This indicates the odds of the baseline group (when all other
+predictors are zero).</li>
+<li><strong>Race (Asian, Black, Hispanic, Other, American Indian/Alaskan
+Native):</strong> These coefficients represent the odds ratio of the
+race having diabetes compared to the reference group White.</li>
+<li><strong>Sex (Male):</strong> Being male is associated with a 1.3
+times odds of having diabetes compared to being female.</li>
+<li><strong>Income:</strong> Each one-unit increase in income is
+associated with an change by a factor of 0.94 in the odds of having
+diabetes. This indicates a negative relationship.</li>
+<li><strong>BMI (Body Mass Index):</strong> For each one-unit increase
+in BMI, the odds of having diabetes increase by a factor of 1.11,
+indicating a positive relationship.</li>
+</ul>
+<p>The other variables can be interpreted from the table in similar
+ways.</p>
+<p>Most coefficients are statistically significant at the 0.001
+significance level with p-values &lt;0.001, except for
+<code>raceAsian</code>, <code>raceOther</code>, <code>education</code>,
+<code>sleep</code>, <code>smoke</code>, and <code>stroke</code>. While
+<code>sleep</code> and <code>stroke</code> is significant at the 0.05
+level, other variables have large p-values that indicate they don’t have
+a statistically significant linear association with the log-odds of
+having diabetes. Especially <code>education</code> has an odds ratio of
+1 with a p-value 0.959, which is very close to 1. This indicates there’s
+no linear correlation between <code>education</code> and the log odds of
+<code>diabetes</code>. For similar reasons, <code>smoke</code> also
+lacks correlation with <code>diabetes</code>. Since the other variables
+are statistically significant, they may be important risk factors of
+<code>diabetes</code>.</p>
+<p>The test accuracy of the model is 75.62%. The test MSE is about
+0.1652.</p>
+<table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">
+Table 6: Summary of the Logistic Regression Model After stepAIC
+</caption>
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="5" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+diabetes
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Odds Ratios
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+std. Error
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+CI
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Statistic
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+(Intercept)
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00 – 0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-30.98
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceAI/AN
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+3.83
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.70
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.69 – 5.51
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+7.37
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceAsian
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.71
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.15
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.46 – 1.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.61
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.108
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceBlack
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.51
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.20
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.15 – 2.95
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+11.36
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceHispanic
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.54
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.43 – 0.68
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-5.23
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+raceOther
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.19
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.80 – 1.55
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.65
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.514
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+sexMale
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.30
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.18 – 1.43
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+5.21
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+age
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.31
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.01
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.29 – 1.34
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+28.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+income
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.94
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.91 – 0.98
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-3.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+bmi
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.11
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.10 – 1.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+25.16
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+sleep
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.89
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.80 – 0.99
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-2.15
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.031</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+exercise
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.79
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.71 – 0.88
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-4.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+stroke
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.24
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.02 – 1.52
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.10
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.036</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+heart_disease
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.62
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.40 – 1.88
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+6.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+alcohol
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.34 – 0.53
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-7.38
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+health
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.67
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.58 – 1.76
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+18.67
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>&lt;0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="5">
+10021
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+R<sup>2</sup> Tjur
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="5">
+0.338
+</td>
+</tr>
+</table>
+<p>After performing stepAIC, the AIC reduced from 10031.23 to 10027.35,
+which is a small reduction. The variables <code>education</code> and
+<code>smoke</code> are removed as their coefficients are not
+statistically significant. The resulting model has all the predictor
+variables significant with level 0.05 except for the categories Asian
+and Other in <code>race</code>. The <span
+class="math inline">\(R^2\)</span> Tjur remains the same.</p>
+<p>The test accuracy of the model is approximately 75.69% with a test
+mse of 0.1652, which are both slightly higher than the full model.</p>
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 7: Variance Inflation Factor (VIF)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+GVIF
+</th>
+<th style="text-align:right;">
+Df
+</th>
+<th style="text-align:right;">
+GVIF^(1/(2*Df))
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+race
+</td>
+<td style="text-align:right;">
+1.117259
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+1.011149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sex
+</td>
+<td style="text-align:right;">
+1.048967
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.024191
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+1.218199
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.103720
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:right;">
+1.186857
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.089430
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bmi
+</td>
+<td style="text-align:right;">
+1.104427
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.050917
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sleep
+</td>
+<td style="text-align:right;">
+1.069544
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.034188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+exercise
+</td>
+<td style="text-align:right;">
+1.094540
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.046202
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+stroke
+</td>
+<td style="text-align:right;">
+1.052190
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.025763
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+heart_disease
+</td>
+<td style="text-align:right;">
+1.096749
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.047258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alcohol
+</td>
+<td style="text-align:right;">
+1.004586
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.002290
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+health
+</td>
+<td style="text-align:right;">
+1.190859
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.091265
+</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the correlation matrix in <em>Figure 2</em>,
+multicollinearity may be of concern. Therefore, the VIF of the variables
+are calculated in the AIC-selected logistic regression model. Since all
+values are close to 1 and far below 5 in <em>Table 7</em>, there is no
+existence of multicollinearity.</p>
+</div>
+<div id="classification-tree" class="section level2">
+<h2>3.6 Classification Tree</h2>
+<p>A classification tree is fitted to predict <code>diabetes</code>,
+which is shown in <em>Figure 3</em>. Then, it is pruned based on the
+optimal complexity parameter. The complexity parameter table is shown in
+<em>Figure 4</em> and the pruned tree is in <em>Figure 5</em>.</p>
+<p>After pruning, there are much fewer nodes and number of splits in the
+tree. The variables used in the pruned tree are <code>age</code>,
+<code>alcohol</code>, <code>bmi</code>, <code>education</code>,
+<code>exercise</code>, <code>health</code>, <code>heart_disease</code>,
+<code>race</code>, and <code>sex</code>, which indicates that they are
+important predictors suggested by the tree.</p>
+<p>The full tree has a test accuracy of 73.34% and an MSE of 0.1748. The
+test accuracy of the pruned tree is about 74.76% and the MSE is about
+0.1737. Since the accuracy is lower and the MSE is higher than the
+logistic regression model, the pruned classification tree performs a bit
+worse than the AIC-selected logistic regression model.</p>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/tree-1.png" width="672" /></p>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/tree-prune-1.png" width="672" /><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/tree-prune-2.png" width="672" /></p>
+</div>
+<div id="bagging" class="section level2">
+<h2>3.7 Bagging</h2>
+<p>Bagging is used to predict diabetes. From the variable importance
+plot in <em>Figure 6</em>, the variables <code>bmi</code> and
+<code>age</code> have relatively high importance compared with the other
+variables. Therefore, <code>bmi</code> and <code>age</code> are
+important predictors of <code>diabetes</code> as suggested by
+bagging.</p>
+<p>Bagging reaches a test accuracy of approximately 73.87%, which is
+lower than the pruned tree and GLM model.</p>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/bag-1.png" width="672" /></p>
+</div>
+<div id="random-forest" class="section level2">
+<h2>3.8 Random Forest</h2>
+<p>Random forest is used to predict diabetes. From the variable
+importance plot in <em>Figure 7</em>, the variables <code>bmi</code> and
+<code>age</code> have relatively high importance compared with the other
+variables, which is the same as the results of bagging.</p>
+<p>Random forest has a test accuracy of about 75.55%, which is higher
+than the pruned tree and bagging but lower than the GLM model.</p>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/rf-1.png" width="672" /></p>
+</div>
+<div id="boosting" class="section level2">
+<h2>3.9 Boosting</h2>
+<p>A gradient boosting machine is fitted to predict diabetes. From the
+<em>Figure 8</em>, the cross-validation error continues to decrease as
+the number of trees increases, but in a much slower speed when the
+number of trees is 3000. Therefore, additional boosting iteration are
+not performed for runtime-performance balance.</p>
+<p>Based on the variable importance plot in <em>Figure 9</em>, the
+variables <code>bmi</code>, <code>age</code>, and <code>health</code>
+have relatively high importance compared with the other variables, which
+contains the results of bagging and random forest.</p>
+<p>The test accuracy of boosting is about 76.30%, which is the highest
+among all models so far. The test MSE of boosting is 0.1596, which is
+also the lowest among all previous models.</p>
+<p><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/boost-1.png" width="672" /><img src="Risk-Factors-of-Diabetes-And-Predictions_files/figure-html/boost-2.png" width="672" /></p>
+</div>
+<div id="extreme-gradient-boosting" class="section level2">
+<h2>3.10 Extreme Gradient Boosting</h2>
+<p>An xgboost model is supposed to be trained to predict
+<code>diabetes</code>. To tune the maximum depth of the tree, the number
+of trees, and the learning rate, a grid search needs to be performed.
+During the process, a 10-fold cross-validation is used to evaluate the
+model performance.</p>
+<p>The variable importance of extreme gradient boosting would be shown
+in <em>Figure 10</em>. The test accuracy and MSE for extreme gradient
+boosting would also be calculated through the code.</p>
+<p>However, due to the large dataset and lack of computer power, the
+code used for extreme gradient boosting cannot terminate even after a
+few hours of running. Therefore, the results and performance of the
+xgboost model are left as the future work to be done.</p>
+</div>
+</div>
+<div id="conclusions-and-summary" class="section level1">
+<h1>4. Conclusions and Summary</h1>
+<p>The <em>Table 8</em> below contains the selected important
+predictors, test accuracy, and test MSE for each of the machine learning
+models fitted.</p>
+<div id="table-8-summary-of-all-fitted-models" class="section level2"
+align="center">
+<h2>Table 8: Summary of All Fitted Models</h2>
+</div>
+<table>
+<colgroup>
+<col width="26%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th align="center">AIC-Logistic Regression</th>
+<th align="center">Full Classification Tree</th>
+<th align="center">Pruned Classification Tree</th>
+<th align="center">Bagging</th>
+<th align="center">Random Forest</th>
+<th align="center">Boosting</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>race</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr class="even">
+<td>sex</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td>age</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr class="even">
+<td>education</td>
+<td align="center"></td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td>income</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr class="even">
+<td>sleep</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td>smoke</td>
+<td align="center"></td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td>bmi</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr class="odd">
+<td>exercise</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td>stroke</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td>heart_disease</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">✓</td>
+</tr>
+<tr class="even">
+<td>alcohol</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td>health</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr class="even">
+<td>Test Accuracy</td>
+<td align="center">75.69%</td>
+<td align="center">73.34%</td>
+<td align="center">74.76%</td>
+<td align="center">73.87%</td>
+<td align="center">75.55%</td>
+<td align="center">76.30%</td>
+</tr>
+<tr class="odd">
+<td>Test MSE</td>
+<td align="center">0.1652</td>
+<td align="center">0.1748</td>
+<td align="center">0.1737</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">0.1596</td>
+</tr>
+</tbody>
+</table>
+<p>Based on <em>Table 8</em>, the test accuracies among all models are
+all around 75% and the test MSEs are all about 0.165. Among them,
+boosting model has the highest test accuracy and lowest test MSE, which
+indicates that it is the best model among all the models fitted
+here.</p>
+<p>Among all the predictors, <code>race</code>, <code>age</code>,
+<code>bmi</code>, and <code>health</code> are considered as important in
+all the models. <code>education</code> has high variable importance in
+all models except the AIC-selected logistic regression model. Therefore,
+those 5 variables may be most predictive of <code>diabetes</code> as
+suggested by the fitted models.</p>
+<p>However, the models fitted using the survey data can only suggest
+correlations between the predictors and <code>diabetes</code> but cannot
+prove causal relationships. We cannot conclude which is the cause and
+which is the effect. Therefore, we are still uncertain about the risk
+factors of <code>diabetes</code> but at least we find some important
+predictors and can predict <code>diabetes</code> at an accuracy of
+76.30%.</p>
+<p>Since the data is based on self-reported surveys, there may be flaws
+in the answers. Additionally, many other risk factors are worth
+researching. Therefore, more accurate scientific research data needs to
+be analyzed to get more reliable results.</p>
+<p>I hope that this research can offer some insights into how we can
+prevent ourselves from having Type 2 Diabetes.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">5. References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+<div id="ref-education" class="csl-entry">
+Borrell LN, White K., Dallo FJ. 2006. <span>“Education and Diabetes in a
+Racially and Ethnically Diverse Population.”</span> In. <a
+href="https://doi.org/10.2105/AJPH.2005.072884">https://doi.org/10.2105/AJPH.2005.072884</a>.
+</div>
+<div id="ref-type1vs2" class="csl-entry">
+Cafasso, Jacquelyn. 2022. <span>“Type 1 and Type 2 Diabetes: What’s the
+Difference?”</span> In. <a
+href="https://www.healthline.com/health/difference-between-type-1-and-type-2-diabetes">https://www.healthline.com/health/difference-between-type-1-and-type-2-diabetes</a>.
+</div>
+<div id="ref-CDC-report" class="csl-entry">
+CDC. 2021. <span>“National Diabetes Statistics Report.”</span> In. <a
+href="https://www.cdc.gov/diabetes/data/statistics-report/index.html">https://www.cdc.gov/diabetes/data/statistics-report/index.html</a>.
+</div>
+<div id="ref-BRFSS-data" class="csl-entry">
+———. 2022. <span>“2022 Behavioral Risk Factor Surveillance System Survey
+Data and Documentation.”</span> In. <a
+href="https://www.cdc.gov/brfss/annual_data/annual_2022.html">https://www.cdc.gov/brfss/annual_data/annual_2022.html</a>.
+</div>
+<div id="ref-gestational" class="csl-entry">
+Clinic, Cleveland. 2022. <span>“Gestational Diabetes.”</span> In. <a
+href="https://my.clevelandclinic.org/health/diseases/9012-gestational-diabetes">https://my.clevelandclinic.org/health/diseases/9012-gestational-diabetes</a>.
+</div>
+<div id="ref-risk-factors" class="csl-entry">
+Leila Ismail, Juma Al Kaabi, Huned Materwala. 2021. <span>“Association
+of Risk Factors with Type 2 Diabetes: A Systematic Review.”</span> In.
+<a
+href="https://doi.org/10.1016/j.csbj.2021.03.003">https://doi.org/10.1016/j.csbj.2021.03.003</a>.
+</div>
+<div id="ref-undersleep" class="csl-entry">
+Olson, Eric J. 2023. <span>“How Many Hours of Sleep Are Enough for Good
+Health?”</span> In. <a
+href="https://www.mayoclinic.org/healthy-lifestyle/adult-health/expert-answers/how-many-hours-of-sleep-are-enough/faq-20057898">https://www.mayoclinic.org/healthy-lifestyle/adult-health/expert-answers/how-many-hours-of-sleep-are-enough/faq-20057898</a>.
+</div>
+<div id="ref-prediabetes" class="csl-entry">
+Tabák, Herder, A. G. 2012. <span>“Prediabetes: A High-Risk State for
+Diabetes Development.”</span> In. <a
+href="https://doi.org/10.1016/S0140-6736(12)60283-9">https://doi.org/10.1016/S0140-6736(12)60283-9</a>.
+</div>
+<div id="ref-bmi" class="csl-entry">
+Toshihiko Yoshizawa, Hiroki Nagasawa, Kouhei Ishikawa. 2018. <span>“A
+Fatal Case of Super-Super Obesity (BMI &gt;80) in a Patient with a
+Necrotic Soft Tissue Infection.”</span> In. <a
+href="https://doi.org/10.2169/internalmedicine.9277-17">https://doi.org/10.2169/internalmedicine.9277-17</a>.
+</div>
+<div id="ref-oversleep" class="csl-entry">
+Whelan, Corey. 2019. <span>“How Much Sleep Is Too Much Sleep? What to
+Know about Oversleeping.”</span> In. <a
+href="https://www.healthline.com/health/oversleeping">https://www.healthline.com/health/oversleeping</a>.
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

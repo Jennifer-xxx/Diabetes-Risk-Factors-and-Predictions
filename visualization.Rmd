@@ -1,0 +1,287 @@
+---
+title: "Data Visualization"
+author: "Yufei Liu"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+```{r setup, message=FALSE, include=FALSE}
+library(data.table)
+library(plotly)
+library(ggplot2)
+library(ggstats)
+```
+
+```{r read-data, include=FALSE}
+# Import the dataset
+data_vis <- read.csv("./data/vis_data.csv")
+```
+
+Below are the data visualization techniques used in exploratory data analysis after preprocessing the dataset.
+
+## Proportional Barplots of the Proportion of Having Diabetes in Different Categories of the Categorical Variables {.tabset}
+
+```{r plot4, class.source="code-r-small", include=FALSE}
+# Generate plot 4
+p4_bar <- ggplot(data_vis, aes(x = factor(race), fill = diabetes, by = factor(race))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 4: Proportion of Diabetes in Different Races", 
+    x = "Race", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot5, class.source="code-r-small", include=FALSE}
+# Generate plot 5
+p5_bar <- ggplot(data_vis, aes(x = factor(sex), fill = diabetes, by = factor(sex))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 5: Proportion of Diabetes in Different Sexes", 
+    x = "Sex", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot6, class.source="code-r-small", include=FALSE}
+# Generate plot 6
+education_order <- c("Did not graduate High School", "Graduated High School", "Attended College or Technical School", "Graduated from College or Technical School")
+  
+p6_bar <- ggplot(data_vis, aes(x = factor(education, level = education_order), fill = diabetes, by = factor(education, level = education_order))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 6: Proportion of Diabetes in People with Different Education Level", 
+    x = "Education Level", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=6)) +
+  coord_flip()
+
+```
+
+```{r plot7, class.source="code-r-small", include=FALSE}
+# Generate plot 7
+p7_bar <- ggplot(data_vis, aes(x = factor(sleep), fill = diabetes, by = factor(sleep))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 7: Proportion of Diabetes in People with Different Sleep Hours", 
+    x = "Healthy Sleep", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=8)) +
+  coord_flip()
+
+```
+
+```{r plot8, class.source="code-r-small", include=FALSE}
+# Generate plot 8
+p8_bar <- ggplot(data_vis, aes(x = factor(smoke), fill = diabetes, by = factor(smoke))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 8: Proportion of Diabetes in People with Different Smoke Habits", 
+    x = "Smoke", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=8)) +
+  coord_flip()
+
+```
+
+```{r plot9, class.source="code-r-small", include=FALSE}
+# Generate plot 9
+p9_bar <- ggplot(data_vis, aes(x = factor(exercise), fill = diabetes, by = factor(exercise))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 9: Proportion of Diabetes in People with Different Exercise Habits", 
+    x = "Exercise", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot10, class.source="code-r-small", include=FALSE}
+# Generate plot 10
+p10_bar <- ggplot(data_vis, aes(x = factor(stroke), fill = diabetes, by = factor(stroke))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 10: Proportion of Diabetes in People with Stroke or Not", 
+    x = "Stroke", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot11, class.source="code-r-small", include=FALSE}
+# Generate plot 11
+p11_bar <- ggplot(data_vis, aes(x = factor(heart_disease), fill = diabetes, by = factor(heart_disease))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 11: Proportion of Diabetes in People with Heart Diseases or Not", 
+    x = "Heart Disease", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot12, class.source="code-r-small", include=FALSE}
+# Generate plot 12
+p12_bar <- ggplot(data_vis, aes(x = factor(alcohol), fill = diabetes, by = factor(alcohol))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 12: Proportion of Diabetes in People with Different Alcohol Habits", 
+    x = "Alcohol", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+```{r plot13, class.source="code-r-small", include=FALSE}
+# Generate plot 13
+health_order <- c("Poor", "Fair", "Good", "Very good", "Excellent")
+p13_bar <- ggplot(data_vis, aes(x = factor(health, level = health_order), fill = diabetes, by = factor(health, level = health_order))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 13: Proportion of Diabetes in People with Different Health Levels", 
+    x = "Health Level", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+### Plot 4: Race
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 4
+ggplotly(p4_bar)
+```
+
+Plot 4 shows the proportion of people with diabetes among various races.  
+There are more people without diabetes than with diabetes in most races except for Black and American Indian/Alaskan Native. The proportion of having diabetes is relatively high in American Indian/Alaskan Native (75.5%) and Black (69.9%), and relatively low in Asian (17.5%) and Hispanic (25.0%).
+
+### Plot 5: Sex
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 5
+ggplotly(p5_bar)
+```
+
+Plot 5 shows the proportion of people with diabetes in male and female.  
+The proportions are roughly the same among two sex, with the proportion of diabetes in male (50.7%) slightly higher than in female (49.3%).
+
+### Plot 6: Education
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 6
+ggplotly(p6_bar)
+```
+
+Plot 6 shows the proportion of diabetes among people with different education level.  
+As the education level increases, the proportion decreases, which indicates a negative relationship between education level and diabetes.
+
+### Plot 7: Sleep
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 7
+ggplotly(p7_bar)
+```
+
+Plot 7 shows the proportion of diabetes among people who sleep 7 to 10 hours (inclusive) on average in a day and people who sleep less than 7 hours or more than 10 hours on average in a day.  
+The proportion of diabetes is slightly higher in the latter group (53.3%) than the prior group (48.2%). This indicates a negative relationship between appropriate sleep and diabetes.
+
+### Plot 8: Smoke
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 8
+ggplotly(p8_bar)
+```
+
+Plot 8 shows the proportion of people with diabetes among people who smoked more than 100 cigarettes in their entire life and people who didn't.  
+The proportion of people with diabetes among heavy smokers (55.2%) are higher than the proportion of people who didn't smoke much (45.7%). This indicates a positive relationship between smoking a lot and having diabetes.
+
+### Plot 9: Exercise
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 9
+ggplotly(p9_bar)
+```
+
+Plot 9 shows the proportion of people with diabetes among people who exercised in the past 30 days and people who didn't.  
+The proportion of people with diabetes among exercised people (43.3%) are much lower than the proportion of people who didn't exercise recently (66.1%). This indicates a negative relationship between exercise and having diabetes.
+
+### Plot 10: Stroke
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 10
+ggplotly(p10_bar)
+```
+
+Plot 10 shows the proportion of people with diabetes among people who ever had stroke before and people who didn't.  
+The proportion of people with diabetes among people that had stroke (75.7%) are much higher than the proportion of people who didn't have stroke (48.1%). This indicates a positive relationship between stroke and diabetes.
+
+### Plot 11: Heart Disease
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 11
+ggplotly(p11_bar)
+```
+
+Plot 11 shows the proportion of people with diabetes among people who ever had coronary heart disease (CHD) or myocardial infarction (MI) before and people who didn't.  
+The proportion of people with diabetes among people that had heart disease (75.9%) are much higher than the proportion of people who didn't have stroke (45.4%). This indicates a positive relationship between heart disease and diabetes.
+
+### Plot 12: Alcohol
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 12
+ggplotly(p12_bar)
+```
+
+Plot 12 shows the proportion of people with diabetes among adult men having more than 14 drinks per week and adult women having more than 7 drinks per week and people who didn't.  
+The proportion of people with diabetes among heavy drinkers (26.1%) are much lower than the proportion of people who aren't heavy drinkers (51.4%). This indicates a negative relationship between alcohol and diabetes, which is surprising.
+
+### Plot 13: Health
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 13
+ggplotly(p13_bar)
+```
+
+Plot 13 shows the proportion of diabetes among people with different self-reported health level.  
+As the health level increases, the proportion decreases, which indicates a negative relationship between health level and diabetes.
