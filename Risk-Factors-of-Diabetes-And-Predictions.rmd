@@ -466,7 +466,7 @@ write.csv(data_vis, "./data/vis_data.csv", row.names=FALSE)
 
 ## 3.2 Data Visualization
 
-All data visualization and analysis can be found on the [website]() **Home** and **Visualization** page. To distinguish the plot on the website and the figures in the report, I would use _Plot + number_ to represent the plots on the website and _Figure + number_ to represent figures in the report.
+All data visualization and analysis can be found on the [website](https://jennifer-xxx.github.io/Diabetes-Risk-Factors-and-Predictions/visualization.html) **Home** and **Visualization** page. To distinguish the plot on the website and the figures in the report, I would use _Plot + number_ to represent the plots on the website and _Figure + number_ to represent figures in the report.
 
 From the _Plot 1_, we can figure out the distributions of BMI among people with diabetes and people without diabetes. The boxplot suggests that `bmi` is positively correlated with diabetes since people with diabetes tend to have higher BMI.
 

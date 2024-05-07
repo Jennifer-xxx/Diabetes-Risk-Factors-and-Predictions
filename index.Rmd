@@ -26,7 +26,7 @@ More data visualizations can be found on the **Visualization** page of the websi
 
 The full PDF report can be downloaded [here](Report.pdf) or from the **Project Report** button on the upper right.
 
-The GitHub repository can be found [here]() or from the **Project GitHub** button on the upper right.
+The project GitHub repository can be found [here](https://github.com/Jennifer-xxx/Diabetes-Risk-Factors-and-Predictions) or from the **GitHub** button on the upper right.
 
 ## Abstract
 
