@@ -1,0 +1,145 @@
+---
+title: "The Risk Factors that are Most Predictive of Type 2 Diabetes and Predict Whether an Individual Has Type 2 Diabetes"
+author: "Yufei Liu"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+```{r setup, message=FALSE, include=FALSE}
+library(data.table)
+library(plotly)
+library(ggplot2)
+library(ggstats)
+```
+
+
+## Links
+This is the home page of my JSC370 Final Project website.
+
+The video presentation that walks through the website and the main findings of the analysis can be found [here]().
+
+The HTML report is on the **Report** page of the website.
+
+More data visualizations can be found on the **Visualization** page of the website.
+
+The full PDF report can be downloaded [here](Report.pdf) or from the **Project Report** button on the upper right.
+
+The GitHub repository can be found [here]() or from the **Project GitHub** button on the upper right.
+
+## Abstract
+
+### Objectives
+
+Diabetes is a serious chronic disease all over the world. The global prevalence of diabetes continues to skyrocket, exacerbated by a lack of awareness of the disease. For long, researchers have been focused on examining the diabetes risks and predicting diabetes in the early stage. Therefore, this project analyzes on the cause of type 2 diabetes and make predictions of diabetes given the information provided in the Behavioral Risk Factor Surveillance System (BRFSS) survey data.
+
+### Methods
+
+Firstly, the data is cleaned by selecting the columns of interest, standardizing the values, and removing the missing values.
+
+Secondly, exploratory data analysis is performed, including boxplots of numerical variables, and a contingency table and proportional barplots of categorical variables. From the patterns of the variables, some data preprocessing may be performed.
+
+Thirdly, split the dataset into training (70%) and testing (30%). Machine learning models such as logistic regression model, classification trees, bagging, random forests, boosting, and extreme gradient boosting are fitted on the training dataset that is splitted.
+
+Lastly, the performances of all models on the test data are evaluated and compared. The best prediction model is selected and the most important predictors are inferred.
+
+### Conclusions
+
+The best model among all the models fitted is the boosting, which has a test accuracy of 76.30% and test MSE of 0.1596.
+
+The important predictors selected by the models are `race`, `age`, `bmi`, `health`, and `education`, which indicates that they may be the most predictive risk factors of `diabetes`.
+
+
+## Interactive Visualizations {.tabset}
+
+Below are some interactive plots that can be played with to get a brief overview of the dataset.
+
+```{r read-data, include=FALSE}
+# Import the dataset
+data_vis <- read.csv("./data/vis_data.csv")
+```
+
+```{r plot1, class.source="code-r-small", include=FALSE}
+# Generate plot 1
+p1_box <- data_vis |>
+  plot_ly(
+    x = ~diabetes,
+    y = ~bmi,
+    type = "box",
+    name = "BMI"
+  ) |>
+  layout(
+    title = "Plot 1: Boxplot of BMI by Diabetes",
+    xaxis = list(title = "Diabetes"),
+    yaxis = list(title = "BMI")
+  )
+
+```
+
+```{r plot2, class.source="code-r-small", include=FALSE}
+# Generate plot 2
+group_diabetes <- data_vis |>
+  filter(diabetes == "Positive")
+group_nondiabetes <- data_vis |>
+  filter(diabetes == "Negative")
+
+p2_bar <- plot_ly(alpha = 0.7) |>
+  add_histogram(x = ~group_diabetes$age, name = "Positive") |>
+  add_histogram(x = ~group_nondiabetes$age, name = "Negative") |>
+  layout(barmode = "overlay",
+         title = "Plot 2: Age Distribution of People with or without Diabetes",
+         xaxis = list(title = "Age"), 
+         yaxis = list(title = "Frequency"),
+         hovermode = "compare")
+
+```
+
+```{r plot3, class.source="code-r-small", include=FALSE}
+# Generate plot 3
+order <- c("Less than $15,000", "$15,000 to < $25,000", "$25,000 to < $35,000", "$35,000 to < $50,000", "$50,000 to < $100,000", "$100,000 to < $200,000", "$200,000 or more")
+
+p3_bar <- ggplot(data_vis, aes(x = factor(income, level = order), fill = diabetes, by = factor(income, level = order))) + 
+  geom_bar(position = "fill", alpha = 0.75) + 
+  labs(
+    title = "Plot 3: Proportion of Diabetes in People with Different Income", 
+    x = "Income", 
+    y = "Proportion",
+    fill = "Diabetes"
+    ) +
+  scale_x_discrete(labels = order) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  theme(plot.title = element_text(size=10)) +
+  coord_flip()
+
+```
+
+### Plot 1: BMI
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 1
+p1_box
+```
+
+Plot 1 shows the boxplot of body mass index (BMI) for people with diabetes and people without diabetes. The side-by-side boxplots allow us to compare the distributions of BMI among the two groups of people to see if there are any distinctions.  
+From the plot, people with diabetes have a higher max, median, and min than people without diabetes. This indicates that people with diabetes tend to have higher BMI than people who don't have diabetes. 
+
+### Plot 2: Age
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 2
+p2_bar
+```
+
+Plot 2 shows the distributions of age for people with diabetes and people without diabetes. Since the age categories are continuous, the plot can act as a histogram af age.  
+From the plot, people without diabetes have a roughly even age distribution over all categories, which is desired since we would like to examine the factors among all age groups. However, people with diabetes have a left skewed age distribution with more elder people having diabetes. This indicates that age is negatively correlated with diabetes. People are more likely to have diabetes when they become older.
+
+### Plot 3: Income
+
+```{r echo=FALSE, warning=FALSE}
+# Interactive Plot 3
+ggplotly(p3_bar)
+```
+
+Plot 3 displays the proportion of people having diabetes in each category of annual household income from all sources.  
+From plot 3, we can see that as income goes from Less than \$15,000 to \$200,000 or more, the proportion of diabetes decreases accordingly. This indicates that income is negatively correlated with diabetes. The more income people have, the lower the risk they have for diabetes, which fits our intuition. Wealthy people may care more about their health conditions and may spend more money on keeping healthy. Therefore, they may have a lower risk of having diabetes.
